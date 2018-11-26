@@ -1,37 +1,36 @@
+import helpers.Node;
+import helpers.ProgramNode;
+import helpers.RoutineNode;
+import helpers.Symbol;
+
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-public class SemanticAnalyzer {
+public class SemanticAnalyzer{
 
 
-    //keeps information about the symbol: its name and type
-    //maybe a value should be added too, if it will be necessary for some semantics checks
-    private class Symbol {
+    private SymbolTable currentScope = null;
 
-        Symbol(Object c, String name){
-            this.name = name;
-            type = c.getClass();
-        }
-
-        private String name;
-
-        private Class type;
-
-        String getName(){
-            return name;
-        }
-
-        Class getType(){
-            return type;
-        }
-
-
-    }
 
     //Contains symbols, which keep insert order
     private class SymbolTable {
 
         private Map<String, Symbol> symbols = new LinkedHashMap<>();
+        private String name;
+        private int level;
+        private SymbolTable enclosingScope = null;
+
+        SymbolTable(String name, int level){
+            this.name = name;
+            this.level = level;
+        }
+
+        SymbolTable(String name, int level, SymbolTable enclosingScope){
+            this.name = name;
+            this.level = level;
+            this.enclosingScope = enclosingScope;
+        }
 
 
         //add new symbol
@@ -52,20 +51,49 @@ public class SemanticAnalyzer {
         }
     }
 
-    //just for check
-    public void initSymbols(){
+    public void visit(Node node){
+        if (node!=null){
+        String method = node.getMethod();
+        if (method.equals("Root")) visitRoot(node);
+        else if (method.equals("Routine")) visitRoutine(node);
+        //TODO add other scopes
+    }
+    }
 
-        Symbol x = new Symbol(15, "a");
-        Symbol y = new Symbol (36.6, "b");
+    private void visitRoot(Node node){
+        SymbolTable globalScope = new SymbolTable(node.getName(), 1);
+        this.currentScope = globalScope;
 
-        SymbolTable table = new SymbolTable();
-        table.insert(x);
-        table.insert(y);
+        List<Symbol> symbols = node.getSymbols();
+        if (!(symbols == null)){
+            for (Symbol s: symbols){
+                globalScope.insert(s);
 
-        table.printTable();
+            }
+        }
 
+        globalScope.printTable();
+        //TODO - check declared values
+
+        visit(node.getChild());
+    }
+
+    private void visitRoutine (Node node){
+        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level+1, this.currentScope);
+        currentScope = procScope;
+        System.out.println(procScope.name+" "+procScope.level);
+        //fetching parameters - TODO
+
+        visit(node.getChild());
+        this.currentScope = this.currentScope.enclosingScope;
 
     }
+
+//    public void check(){
+//        Node start = new ProgramNode("proga");
+//        visit(start);
+//    }
+
 
 }
 
