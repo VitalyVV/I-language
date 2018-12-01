@@ -17,5 +17,8 @@ public class Main {
         while(lx.hasNextToken()){
             System.out.println(lx.getNextToken());
         }
+
+//        SemanticAnalyzer sa = new SemanticAnalyzer();
+//        sa.check();
     }
 }
