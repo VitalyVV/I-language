@@ -1,7 +1,6 @@
-import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
+package Lexer;
 
 import java.io.NotActiveException;
-import java.io.StreamTokenizer;
 import java.util.*;
 
 public class Lexer {
@@ -32,6 +31,7 @@ public class Lexer {
         lexems.put("end", "end");
         lexems.put("array", "array");
         lexems.put(":=", "ass");
+        lexems.put(":", "col");
         lexems.put("(", "lbr");
         lexems.put(")", "rbr");
         lexems.put("[", "lsbr");
@@ -67,6 +67,11 @@ public class Lexer {
             ArrayList<String> temp = fsm.getTokens();
             adjust(temp);
         }
+        for (int i = 0; i < tokens.size(); i++) {
+            if (lexems.containsKey(tokens.get(i))){
+                tokens.set(i, lexems.get(tokens.get(i)));
+            }
+        }
         isSet = true;
     }
 
@@ -80,7 +85,7 @@ public class Lexer {
 
     private void isSetOrError() throws NotActiveException {
         if (!isSet){
-            throw new NotActiveException("Lexer should be initialized.");
+            throw new NotActiveException("Lexer.Lexer should be initialized.");
         }
     }
 
@@ -88,6 +93,9 @@ public class Lexer {
         return tokens.remove(0);
     }
 
+    public ArrayList<String> getTokens() {
+        return tokens;
+    }
 
     public boolean hasNextToken() throws NotActiveException {
         isSetOrError();

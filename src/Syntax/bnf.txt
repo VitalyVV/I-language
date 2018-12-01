@@ -1,0 +1,53 @@
+Program : SimpleDeclaration
+        | RoutineDeclaration
+
+SimpleDeclaration : VariableDeclaration
+                  | TypeDeclaration
+
+VariableDeclaration : "var" Identifier "col" Type ( "is" Expression )
+                    | "var" Identifier "is" Expression
+
+TypeDeclaration : "type" Identifier "is" Type
+
+Type : PrimitiveType
+     | UserType
+     | Identifier
+
+PrimitiveType : "int"
+              | "real"
+              | "bool"
+
+UserType : ArrayType
+         | RecordType
+
+RecordType : "record" "lfbr" VariableDeclaration "rfbr" "end"
+
+ArrayType : "array" "lsbr" Expression "rsbr" Type
+
+Statement : Assignment
+          | RoutineCall
+          | WhileLoop
+          | ForLoop
+          | IfStatement
+
+Assignment : ModifiablePrimary "ass" Expression
+
+RoutineCall : Identifier [ "lbr" Expression {"comm" Expression} "rbr" ]
+
+WhileLoop : "while" Expression "loop" Body "end"
+
+ForLoop : "for" Identifier "in" ["reverse"] Range "loop" Body "end"
+
+Range : Expression ".." Expression
+
+IfStatement : "if" Expression "then" Body ["else" Body] "end"
+
+RoutineDeclaration : "routine" Identifier [ Parameters ] [ "col" Type ] [ "is" Body "end" ]
+
+Parameters : "lbr" ParameterDeclaration { "comm" ParameterDeclaration } "rbr"
+
+ParameterDeclaration : Identifier "col" Type
+
+Body : "lfbr" (SimpeDeclaration | Statement) "rfbr"
+
+Expression : Relation { ("and" | "or" | "xor") } Relation

@@ -1,3 +1,5 @@
+import Lexer.Lexer;
+
 import java.io.*;
 import java.util.Scanner;
 
