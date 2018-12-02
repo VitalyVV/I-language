@@ -16,7 +16,6 @@ public abstract class Node {
         return name;
     }
 
-    public abstract Node getChild();
 
     public abstract String getMethod();
 
