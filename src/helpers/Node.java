@@ -10,6 +10,7 @@ public abstract class Node {
         this.name = name;
     }
 
+
     public String getName(){
         return name;
     }
@@ -19,6 +20,7 @@ public abstract class Node {
     public abstract String getMethod();
 
     public abstract List<Symbol> getSymbols();
+
 
 }
 
