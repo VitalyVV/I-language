@@ -36,6 +36,10 @@ public class SemanticAnalyzer{
             symbols.put(symbol.getName(), symbol);
         }
 
+        void insert(LinkedHashMap<String, Symbol> symbols){
+            this.symbols = symbols;
+        }
+
         //get a Symbol by its name
         protected Symbol lookup(String name){
             return symbols.get(name);
@@ -62,12 +66,12 @@ public class SemanticAnalyzer{
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
-        List<Symbol> symbols = node.getSymbols();
-        if (!(symbols == null)){
-            for (Symbol s: symbols){
-                globalScope.insert(s);
-
-            }
+        try{
+            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
+            if (symbols!=null) globalScope.insert(symbols);
+        }catch (Exception e){
+            e.printStackTrace();
+            return;
         }
 
         globalScope.printTable();

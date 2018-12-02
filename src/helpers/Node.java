@@ -1,5 +1,6 @@
 package helpers;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public abstract class Node {
@@ -19,7 +20,7 @@ public abstract class Node {
 
     public abstract String getMethod();
 
-    public abstract List<Symbol> getSymbols();
+    public abstract LinkedHashMap<String, Symbol> getSymbols() throws Exception;
 
 
 }
