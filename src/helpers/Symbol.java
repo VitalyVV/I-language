@@ -4,20 +4,22 @@ package helpers;
 //maybe a value should be added too, if it will be necessary for some semantics checks
 public class Symbol {
 
-    Symbol(Object c, String name){
+    Symbol(String type, String name, Object unit){
         this.name = name;
-        type = c.getClass();
+        this.type = type;
+        this.unit = unit;
     }
 
     private String name;
 
-    private Class type;
+    private String type;
+    private Object unit;
 
     public String getName(){
         return name;
     }
 
-    public Class getType(){
+    public String getType(){
         return type;
     }
 
