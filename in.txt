@@ -1,4 +1,38 @@
-if(are there){
-    then = 5 + 31-0.112
-}
-print "akey?"
+var defIne9918 : integer is 9
+var x : integer
+type best is integer
+var defIne : best
+
+var y : real is -10.10
+y[10-8 and 3].best := 10.9
+
+if x >= 10 then
+    x := x - 10
+else
+    if x < 5 then
+        y := x = 0
+    end
+    var arr : array[x] real
+    var rec : record
+                 var n : real
+                 var k : integer
+                 var p : boolean
+                 var j : array[10] real
+             end
+    while n<10 loop
+        for jon in reverse 10..50 loop
+            rec.k := jon
+        end
+    end
+end
+
+routine foo (i: integer, j : boolean) : integer is
+    result := i + j
+end
+
+routine bar (k: real) is
+    rec.j[k % body * 10] := 6 <= 8
+end
+
+bar(y)
+

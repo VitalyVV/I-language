@@ -22,12 +22,12 @@ public class Lexer {
         lexems.put("var", "var");
         lexems.put("is", "is");
         lexems.put("type", "type");
-        lexems.put("integer", "int");
+        lexems.put("integer", "integer");
         lexems.put("real", "real");
-        lexems.put("boolean", "bool");
+        lexems.put("boolean", "boolean");
         lexems.put("true", "true");
         lexems.put("false", "false");
-        lexems.put("record", "rec");
+        lexems.put("record", "record");
         lexems.put("end", "end");
         lexems.put("array", "array");
         lexems.put(":=", "ass");
@@ -55,7 +55,7 @@ public class Lexer {
         lexems.put("%", "perc");
         lexems.put("+", "add");
         lexems.put("-", "sub");
-        lexems.put("\"", "quot");
+        lexems.put("\"","quot");
     }
 
     private boolean isAlphanumeric(String s){

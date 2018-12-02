@@ -37,24 +37,29 @@ public class SyntaxParser {
     }
 
     private String nextWord(){
-        String word = tokens.get(index);
-        ++index;
+        String word = "";
+        if(index + 1 < tokens.size()){
+            word = tokens.get(index);
+            ++index;
+        }
         return word;
     }
 
     private ArrayList<HashMap<String, Object>> parseProgram(){
-        String word = nextWord();
         ArrayList<HashMap<String, Object>> content = new ArrayList<>();
-        HashMap<String, Object> temp = new HashMap<>();
+        String word = nextWord();
         while(index<tokens.size()){
+            HashMap<String, Object> temp = new HashMap<>();
             if(word.equals("routine")){
                 temp.put("Section", "Statement");
                 temp.put("Content", parseRoutineDeclaration());
             }else{
+                --index;
                 temp.put("Section", "Statement");
                 temp.put("Content", parseSimpleDeclaration());
             }
             content.add(temp);
+            word = nextWord();
         }
         return content;
 
@@ -151,7 +156,7 @@ public class SyntaxParser {
     private HashMap<String, Object> parseType (){
         HashMap<String, Object> temp = new HashMap<String, Object>();
         String word = nextWord();
-        if (word.equals("int") || word.equals("real") || word.equals("bool")){
+        if (word.equals("integer") || word.equals("real") || word.equals("boolean")){
             //parsePrimitiveType()
             temp.put("primitive", word);
         }else if(word.equals("array")){
@@ -331,6 +336,7 @@ public class SyntaxParser {
         params.add(parseParameterDeclaration(word));
         while(!word.equals("rbr")){
             params.add(parseParameterDeclaration(word));
+            word = nextWord();
         }
         return params;
     }
@@ -349,7 +355,7 @@ public class SyntaxParser {
 
     private ArrayList<HashMap<String, Object>> parseBody (){
         ArrayList<HashMap<String, Object>> content = new ArrayList<>();
-        String word = nextWord();
+        String word = tokens.get(index);
         while(!word.equals("end") && !word.equals("else")){
             content.add(parseStatement());
             word = nextWord();
@@ -361,21 +367,26 @@ public class SyntaxParser {
     private HashMap<String, Object> parseExpression(){
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseRelation());
+        temp.put("is", "expression");
         String word = nextWord();
         if(word.equals("and") || word.equals("or") || word.equals("xor")){
-            ArrayList<HashMap<String, Object>> rigthpart = new ArrayList<>();
             temp.put("hasright", "true");
             temp.put("op", word);
             temp.put("right", parseRelation());
             HashMap<String, Object> out = new HashMap<>();
             word = nextWord(); //TODO Maybe temporary
             while(word.equals("and") || word.equals("or") || word.equals("xor")){
-                out.put("left", new HashMap<String, Object>(temp));
+                out.put("left", parseRelation());
+                out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word);
-                out.put("right", parseRelation());
                 temp = out;
                 word = nextWord();
             }
+        }else{
+            if (index < tokens.size() && (!isOp(tokens.get(index)))){
+                --index;
+            }
+            temp.put("hasright", "false");
         }
 
         return temp;
@@ -386,24 +397,37 @@ public class SyntaxParser {
     private HashMap<String, Object> parseRelation(){
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseSimple());
+        temp.put("is", "relation");
         String word = nextWord();
         if(isRelationSign(word)){
-            ArrayList<HashMap<String, Object>> rigthpart = new ArrayList<>();
             temp.put("hasright", "true");
             temp.put("op", word);
             temp.put("right", parseSimple());
             HashMap<String, Object> out = new HashMap<>();
             word = nextWord(); //TODO Maybe temporary
             while(word.equals("and") || word.equals("or") || word.equals("xor")){
-                out.put("left", new HashMap<String, Object>(temp));
+                out.put("left", parseSimple());
+                out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word);
-                out.put("right", parseSimple());
                 temp = out;
                 word = nextWord();
             }
+        }else{
+            if (index < tokens.size() && (!isOp(tokens.get(index)))){
+                --index;
+            }
+            temp.put("hasright", "false");
         }
 
         return temp;
+    }
+
+    private boolean isOp(String word){
+        return word.equals("less")      || word.equals("lesseq") || word.equals("great") ||
+                word.equals("greateq")  || word.equals("eq")     || word.equals("noteq") ||
+                word.equals("and")      || word.equals("or")     || word.equals("xor")   ||
+                word.equals("mul")      || word.equals("div")    || word.equals("perc")  ||
+                word.equals("add")      || word.equals("sub")    || word.equals("not");
     }
 
     private boolean isRelationSign(String word){
@@ -415,6 +439,7 @@ public class SyntaxParser {
     private HashMap<String, Object> parseSimple (){
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseFactor());
+        temp.put("is", "simple");
         String word = nextWord();
         if(word.equals("mul") || word.equals("div") || word.equals("perc")){
             ArrayList<HashMap<String, Object>> rigthpart = new ArrayList<>();
@@ -424,12 +449,17 @@ public class SyntaxParser {
             HashMap<String, Object> out = new HashMap<>();
             word = nextWord(); //TODO Maybe temporary
             while(word.equals("and") || word.equals("or") || word.equals("xor")){
-                out.put("left", new HashMap<String, Object>(temp));
+                out.put("left", parseFactor());
+                out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word);
-                out.put("right", parseFactor());
                 temp = out;
                 word = nextWord();
             }
+        }else{
+            if (index < tokens.size() && (!isOp(tokens.get(index)))){
+                --index;
+            }
+            temp.put("hasright", "false");
         }
 
         return temp;
@@ -438,22 +468,27 @@ public class SyntaxParser {
     // Factor : Summand { ( "add" | "sub" ) Summand }
     private HashMap<String, Object> parseFactor (){
         HashMap<String, Object> temp = new HashMap<>();
-        String word = nextWord();
         temp.put("left", parseSummand());
+        String word = nextWord();
+        temp.put("is", "factor");
         if(word.equals("add") || word.equals("sub")){
-            ArrayList<HashMap<String, Object>> rigthpart = new ArrayList<>();
             temp.put("hasright", "true");
             temp.put("op", word);
             temp.put("right", parseSummand());
             HashMap<String, Object> out = new HashMap<>();
             word = nextWord(); //TODO Maybe temporary
             while(word.equals("and") || word.equals("or") || word.equals("xor")){
-                out.put("left", new HashMap<String, Object>(temp));
+                out.put("left", parseSummand());
+                out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word);
-                out.put("right", parseSummand());
                 temp = out;
                 word = nextWord();
             }
+        }else{
+            if (index < tokens.size() && (!isOp(tokens.get(index)))){
+                --index;
+            }
+            temp.put("hasright", "false");
         }
 
         return temp;
@@ -462,7 +497,8 @@ public class SyntaxParser {
     //Summand : Primary | "lbr" Expression "rbr"
     private HashMap<String, Object> parseSummand (){
         HashMap<String, Object> temp = new HashMap<>();
-        String word = nextWord();
+        String word = tokens.get(index);
+        temp.put("is", "summand");
         if(word.equals("lbr")){
             temp.put("left", parseExpression());
             nextWord();
@@ -478,42 +514,52 @@ public class SyntaxParser {
         | [ Sign ] RealLiteral
         | "true"
         | "false"
-        | Identifier
+        | ModifiablePrimary
         | RoutineCall
      */
     private HashMap<String, Object> parsePrimary (){
         HashMap<String, Object> temp = new HashMap<>();
-        String word = nextWord();
+        String word = tokens.get(index);
+        temp.put("is", "primary");
         if(word.equals("true") || word.equals("false")){
             temp.put("type", "boolean");
             temp.put("value", word);
-        }else if(word.equals("add") || word.equals("sub") || word.equals("not")){
-            temp.put("sign", word.equals("add")? "+": (word.equals("sub")? "-": "not"));
-            if(word.equals("not")){
-                word = nextWord();
-                if(parseIntegerLiteral(word)){
-                    temp.put("value", Integer.parseInt(word));
+        }else if(word.equals("add") || word.equals("sub") || word.equals("not")
+                    || parseIntegerLiteral(word) || parseRealLiteral(word)) {
+
+            if(word.equals("add") || word.equals("sub") || word.equals("not") ){
+                temp.put("sign", word.equals("add")? "+": (word.equals("sub")? "-": "not"));
+                if(word.equals("not")){
+                    word = nextWord();
+                    if(parseIntegerLiteral(word)){
+                        temp.put("type", "integer");
+                        temp.put("value", word);
+                    }
+                }else{
+                    ++index;
+                    word = nextWord();
                 }
-            }else{
+            }
+            if(!(word.equals("add") || word.equals("sub"))){
                 if(parseIntegerLiteral(word)){
                     temp.put("type", "integer");
                     temp.put("value", word);
                 }else if(parseRealLiteral(word)){
                     temp.put("type", "real");
                     temp.put("value", word);
-                }// TODO: maybe error?
+                }
             }
         }else if(parseIdentifier(word)){
             String op = nextWord();
             --index;
             if(op.equals("dot") || op.equals("lsbr")){
-                temp.put("type", "modifyable");
+                temp.put("type", "modifiable");
                 temp.put("value", parseModifiablePrimary());
             }else{
                 temp.put("type", "routinecall");
                 temp.put("value", parseRoutineCall(word));
             }
-        } //TODO: Maybe error?
+        }
 
         return temp;
     }
@@ -524,7 +570,7 @@ public class SyntaxParser {
     }
 
     private boolean parseRealLiteral(String word){
-        Pattern p = Pattern.compile("[0-9]*.[0-9]*]");
+        Pattern p = Pattern.compile("[0-9]*.[0-9]*");
         return p.matcher(word).matches();
     }
 
