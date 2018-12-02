@@ -3,9 +3,7 @@ import helpers.ProgramNode;
 import helpers.RoutineNode;
 import helpers.Symbol;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SemanticAnalyzer{
 
@@ -51,7 +49,7 @@ public class SemanticAnalyzer{
         }
     }
 
-    public void visit(Node node){
+    private void visit(Node node){
         if (node!=null){
         String method = node.getMethod();
         if (method.equals("Root")) visitRoot(node);
@@ -86,6 +84,13 @@ public class SemanticAnalyzer{
 
         visit(node.getChild());
         this.currentScope = this.currentScope.enclosingScope;
+
+    }
+
+
+    public void analyze(ArrayList<HashMap<String, Object>> toAst){
+        ProgramNode program = new ProgramNode("Program", toAst);
+        visit(program);
 
     }
 
