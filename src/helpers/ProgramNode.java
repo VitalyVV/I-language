@@ -1,9 +1,6 @@
 package helpers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ProgramNode extends Node {
 
@@ -13,7 +10,7 @@ public class ProgramNode extends Node {
 
     private ArrayList<HashMap<String, Object>> children;
 
-    private List<Symbol> symbolsDeclarations = new LinkedList<>();
+    private LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
 
     public String getMethod(){
         return "Root";
@@ -30,7 +27,7 @@ public class ProgramNode extends Node {
         return null;
     }
 
-    public List<Symbol> getSymbols(){
+    public LinkedHashMap<String, Symbol> getSymbols() throws Exception{
         for (HashMap<String, Object> elem: children){
 
             HashMap<String, Object> rootUnit = ((HashMap<String, Object>) elem.get("Content"));
@@ -38,11 +35,17 @@ public class ProgramNode extends Node {
             if (unit.equals("var")){
                 if (((String)rootUnit.get("hastype")).equals("true")){
                     Symbol s = new Symbol(getType(rootUnit.get("type")), (String) rootUnit.get("name"), rootUnit);
-                    symbolsDeclarations.add(s);
+                    symbolsDeclarations.put((String) rootUnit.get("name"), s);
                 }
                 else {
+                    String valueType = calculateExpressionResult(rootUnit.get("expression"));
+                    Symbol s = new Symbol(valueType, (String) rootUnit.get("name"), rootUnit);
+                    symbolsDeclarations.put((String) rootUnit.get("name"), s);
 
                 }
+            }
+            if(unit.equals("declaration")){
+
             }
         }
 
@@ -57,10 +60,34 @@ public class ProgramNode extends Node {
 //        s.add(s1);
 //        s.add(s2);
 //        return s;
-        return null;
+        return symbolsDeclarations;
     }
 
-    private String getType(Object unit){
+    private String getType(Object unit) throws Exception{
+        HashMap<String, Object> a= (HashMap<String, Object>) unit;
+        if (a.containsKey("primitive")){
+            return (String)a.get("primitive");
+        }
+        else if (a.containsKey("identifier")){
+            String typeVarName = (String)a.get("identifier");
+            if (symbolsDeclarations.keySet().contains(typeVarName)){
+                return symbolsDeclarations.get(typeVarName).getType();
+            }
+            else throw new Exception("No such identifier declared: "+typeVarName);
+        }
+        else if (a.containsKey("array")){
+            return "array";
+        }
+        else if (a.containsKey("record")){
+            return "record";
+        }
+        else {
+            Map.Entry<String,Object> entry = a.entrySet().iterator().next();
+            throw  new Exception("No such type exists: "+entry.getKey());
+        }
+    }
+
+    private String calculateExpressionResult(Object o){
         return null;
     }
 }
