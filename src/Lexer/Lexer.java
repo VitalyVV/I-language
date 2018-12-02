@@ -32,6 +32,7 @@ public class Lexer {
         lexems.put("array", "array");
         lexems.put(":=", "ass");
         lexems.put(":", "col");
+        lexems.put("..", "doubdot");
         lexems.put("(", "lbr");
         lexems.put(")", "rbr");
         lexems.put("[", "lsbr");
@@ -57,15 +58,28 @@ public class Lexer {
         lexems.put("\"", "quot");
     }
 
+    private boolean isAlphanumeric(String s){
+        char[] arr = s.toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            if (!Character.isLetterOrDigit(arr[i])){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void parseString(String input){
         StringTokenizer tokenizer = new StringTokenizer(input);
         while(tokenizer.hasMoreTokens()){
             String current = tokenizer.nextToken();
-            FSM fsm = new FSM(current);
-            fsm.parse();
-            ArrayList<String> temp = fsm.getTokens();
-            adjust(temp);
+            if (!isAlphanumeric(current)) {
+                FSM fsm = new FSM(current);
+                fsm.parse();
+                ArrayList<String> temp = fsm.getTokens();
+                adjust(temp);
+            }else{
+                tokens.add(lexems.getOrDefault(current, current));
+            }
         }
         for (int i = 0; i < tokens.size(); i++) {
             if (lexems.containsKey(tokens.get(i))){
@@ -87,10 +101,6 @@ public class Lexer {
         if (!isSet){
             throw new NotActiveException("Lexer.Lexer should be initialized.");
         }
-    }
-
-    public String getNextToken(){
-        return tokens.remove(0);
     }
 
     public ArrayList<String> getTokens() {
