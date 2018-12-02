@@ -12,6 +12,10 @@ public class ProgramNode extends Node {
 
     private LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
 
+    private LinkedList<RoutineNode> routines = new LinkedList<>();
+    private int currentChild = 0;
+
+
     public String getMethod(){
         return "Root";
     }
@@ -19,12 +23,15 @@ public class ProgramNode extends Node {
     public ProgramNode(String name, ArrayList<HashMap<String, Object>> children){
         super(name);
         this.children = children;
+
     }
 
-    public Node getChild(){
-        //TODO add logic to fetch child from json
-        //return new RoutineNode("foo");
-        return null;
+    public RoutineNode getChild(){
+
+        if (currentChild>routines.size()-1) return null;
+        RoutineNode rnode =  routines.get(currentChild);
+        currentChild++;
+        return rnode;
     }
 
     public LinkedHashMap<String, Symbol> getSymbols() throws Exception{
@@ -44,8 +51,9 @@ public class ProgramNode extends Node {
 
                 }
             }
-            if(unit.equals("declaration")){
-
+            else if(unit.equals("declaration")){
+                RoutineNode routine = new RoutineNode((String) rootUnit.get("name"), rootUnit);
+                routines.add(routine);
             }
         }
 

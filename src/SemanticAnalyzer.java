@@ -53,16 +53,16 @@ public class SemanticAnalyzer{
         }
     }
 
-    private void visit(Node node){
-        if (node!=null){
-        String method = node.getMethod();
-        if (method.equals("Root")) visitRoot(node);
-        else if (method.equals("Routine")) visitRoutine(node);
-        //TODO add other scopes
-    }
-    }
+//    private void visit(Node node){
+//        if (node!=null){
+//        String method = node.getMethod();
+//        if (method.equals("Root")) visitRoot(node);
+//        else if (method.equals("Routine")) visitRoutine(node);
+//        //TODO add other scopes
+//    }
+//    }
 
-    private void visitRoot(Node node){
+    private void visitRoot(ProgramNode node){
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
@@ -76,17 +76,21 @@ public class SemanticAnalyzer{
 
         globalScope.printTable();
         //TODO - check declared values
-
-        visit(node.getChild());
+        while(true){
+            RoutineNode rnode = node.getChild();
+            if (rnode == null) break;
+            globalScope.insert(new Symbol("routine", rnode.getName(), rnode.getRoutine()));
+            visitRoutine(rnode);
+        }
     }
 
-    private void visitRoutine (Node node){
+    private void visitRoutine (RoutineNode node){
         SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level+1, this.currentScope);
         currentScope = procScope;
         System.out.println(procScope.name+" "+procScope.level);
         //fetching parameters - TODO
 
-        visit(node.getChild());
+//        visit(node.getChild());
         this.currentScope = this.currentScope.enclosingScope;
 
     }
@@ -94,7 +98,7 @@ public class SemanticAnalyzer{
 
     public void analyze(ArrayList<HashMap<String, Object>> toAst){
         ProgramNode program = new ProgramNode("Program", toAst);
-        visit(program);
+        visitRoot(program);
 
     }
 

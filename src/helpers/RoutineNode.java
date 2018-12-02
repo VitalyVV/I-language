@@ -1,23 +1,28 @@
 package helpers;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RoutineNode extends Node {
 
-    public RoutineNode(String name){
+    private HashMap<String, Object> routine;
+
+    public RoutineNode(String name, HashMap<String, Object> routine){
         super(name);
+        this.routine = routine;
     }
 
     public String getMethod(){
         return "Routine";
     }
+    LinkedHashMap<String, Symbol> symbols = new LinkedHashMap<>();
 
-    public Node getChild(){
-        //TODO add logic to fetch child from json
+    public LinkedHashMap<String, Symbol> getSymbols(){
         return null;
     }
 
-    public List<Symbol> getSymbols(){
-        return null;
+    public HashMap<String, Object> getRoutine(){
+        return routine;
     }
 }
