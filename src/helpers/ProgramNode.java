@@ -2,6 +2,7 @@ package helpers;
 
 import com.sun.corba.se.impl.io.TypeMismatchException;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.*;
 
 //I think that functions for processing
@@ -44,6 +45,18 @@ public class ProgramNode extends Node {
         RoutineNode rnode =  routines.get(currentChild);
         currentChild++; //update the pointer for routine we have not visited before
         return rnode;
+    }
+
+    public String getOpType(String op) throws OperationNotSupportedException {
+        List<String> factors = Arrays.asList("div","mul","perc");
+        List<String> summands = Arrays.asList("sub","add");
+        List<String> relations = Arrays.asList("less", "lesseq", "great","greateq", "eq", "noteq");
+
+
+        if (factors.contains(op))return "factor";
+        else if (summands.contains(op))return "summand";
+        else if (relations.contains(op))return "relation";
+        else throw new OperationNotSupportedException("Invalid operand: "+ op);
     }
 
     //Start method to go down the tree and get the types of objects
@@ -160,19 +173,19 @@ public class ProgramNode extends Node {
         }
 
         String result = calculateExpressionResult(hashmaped.get("left"));
-        String mapedResultType  = ((String)hashmaped.get("is"));
+        String mapedResultType  = (String)hashmaped.get("is");
         //Logic for factor relation and simple type is identical since all require same type left and right operands
         if (mapedResultType.equals("factor") || mapedResultType.equals("relation") || mapedResultType.equals("simple")){
             if (((String)hashmaped.get("hasright")).equals("true")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
                 if (checkOperable(result, resultRight)){
-                    return getTypesResult(result, resultRight, mapedResultType);
+                    return getTypesResult(result, resultRight, getOpType((String)hashmaped.get("op")));
                 }
             } else return result;
             //Summand and expression have only left operands
-        } else if (((String)hashmaped.get("is")).equals("summand")) return result;
-          else if (((String)hashmaped.get("is")).equals("expression")) return result;
-          else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("is"));
+        } else if (mapedResultType.equals("summand")) return result;
+          else if (mapedResultType.equals("expression")) return result;
+          else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
           return null;
     }
 
