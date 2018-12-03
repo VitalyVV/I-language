@@ -127,7 +127,6 @@ public class SyntaxParser {
                     return temp;
                 }
                 if (((HashMap<String, Object>) temp.get("type")).containsKey("record")) {
-                    ++index;
                     return temp;
                 }
                 word = nextWord();
@@ -174,6 +173,7 @@ public class SyntaxParser {
             temp.put("array", parseArrayType());
         } else if (word.equals("$$record")) {
             temp.put("record", parseRecordType());
+            ++index;
         } else {
             if (parseIdentifier(word)) {
                 temp.put("identifier", word.replaceAll("\\$", ""));
