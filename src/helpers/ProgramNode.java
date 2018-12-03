@@ -1,5 +1,8 @@
 package helpers;
 
+import com.sun.corba.se.impl.io.TypeMismatchException;
+
+import javax.naming.OperationNotSupportedException;
 import java.util.*;
 
 //I think that functions for processing
@@ -19,6 +22,10 @@ public class ProgramNode extends Node {
     //list of routines only
     private LinkedList<RoutineNode> routines = new LinkedList<>();
     private LinkedList<String> namesRoutines = new LinkedList<>();
+
+    //type declarations
+    HashMap<String,String> typeMappings = new HashMap<>();
+
     private int currentChild = 0;
 
 
@@ -40,37 +47,60 @@ public class ProgramNode extends Node {
         return rnode;
     }
 
+    public String getOpType(String op) throws OperationNotSupportedException {
+        List<String> factors = Arrays.asList("div","mul","perc");
+        List<String> summands = Arrays.asList("sub","add");
+        List<String> relations = Arrays.asList("less", "lesseq", "great","greateq", "eq", "noteq");
+
+
+        if (factors.contains(op))return "factor";
+        else if (summands.contains(op))return "summand";
+        else if (relations.contains(op))return "relation";
+        else throw new OperationNotSupportedException("Invalid operand: "+ op);
+    }
+
     //Start method to go down the tree and get the types of objects
     public LinkedHashMap<String, Symbol> getSymbols() throws Exception{
         for (HashMap<String, Object> elem: children){
 
             HashMap<String, Object> rootUnit = ((HashMap<String, Object>) elem.get("Content"));
             String unit = (String) rootUnit.get("statement");
-            if (unit.equals("var")){//variable declaration type extraction
-                if (((String)rootUnit.get("hastype")).equals("true")){
-
+            if (unit.equals("var")) {//variable declaration type extraction
+                if (((String) rootUnit.get("hastype")).equals("true")) {
                     //if type is already declared via "var a: integer"
-                    Symbol s = new Symbol(getType(rootUnit.get("type")), (String) rootUnit.get("name"), rootUnit);
+                    Symbol s = null;
+                    //Vars that have type may have "is" expressions too
+                    if (rootUnit.containsKey("value"))
+                    {
+                        String varType = getType((HashMap<String,Object>) rootUnit.get("type"));
+
+                        //Inference expression type
+                        String expressionResult = calculateExpressionResult(rootUnit.get("value"));
+                        //If expression type is the same as declared type
+                        if (expressionResult.equals(varType))
+                        {
+                            s = new Symbol(getType(rootUnit.get("type")), (String) rootUnit.get("name"), rootUnit);
+                        } else throw new TypeMismatchException("\nWrong expression result type for: " + rootUnit.get("name") +
+                                ".\nExpected: "+ varType+". Got: " + expressionResult);
+
+                    } else s = new Symbol(getType(rootUnit.get("type")), (String) rootUnit.get("name"), rootUnit);
+
                     symbolsDeclarations.put((String) rootUnit.get("name"), s);
-                }
-                else {
+                } else {
                     //if type is declared via expression calculation like "var a: integer is (5+5)*10"
                     String valueType = calculateExpressionResult(rootUnit.get("expression"));
                     Symbol s = new Symbol(valueType, (String) rootUnit.get("name"), rootUnit);
                     symbolsDeclarations.put((String) rootUnit.get("name"), s);
-
                 }
-            }
-
-            //if we have routine declaration "routine a() : integer"
-            else if(unit.equals("declaration")){
+            } else if(unit.equals("declaration")){//if we have routine declaration "routine a() : integer"
                 RoutineNode routine = new RoutineNode((String) rootUnit.get("name"), rootUnit);
-
                 //we add it separate list of routines
                 routines.add(routine);
                 //we add name of routine to find previously declared ones + to check if we actually have declared it
                 namesRoutines.add((String) rootUnit.get("name"));
-            }
+            }else if(unit.equals("type")){//if we have type declaration
+                typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));
+            } else throw new Exception("Invalid syntax. Routine or declaration expected");
         }
 
 
@@ -99,6 +129,9 @@ public class ProgramNode extends Node {
             String typeVarName = (String)a.get("identifier");
             if (symbolsDeclarations.keySet().contains(typeVarName)){
                 return symbolsDeclarations.get(typeVarName).getType();
+            } else if (typeMappings.containsKey(typeVarName))
+            {
+                return typeMappings.get(typeVarName);
             }
             else throw new Exception("No such identifier declared: "+typeVarName);
         }
@@ -138,17 +171,22 @@ public class ProgramNode extends Node {
             }
             else throw new Exception("No such type exists: "+typePrimary);
         }
+
         String result = calculateExpressionResult(hashmaped.get("left"));
-        if (((String)hashmaped.get("is")).equals("factor")){
+        String mapedResultType  = (String)hashmaped.get("is");
+        //Logic for factor relation and simple type is identical since all require same type left and right operands
+        if (mapedResultType.equals("factor") || mapedResultType.equals("relation") || mapedResultType.equals("simple")){
             if (((String)hashmaped.get("hasright")).equals("true")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
                 if (checkOperable(result, resultRight)){
-                    return getTypesResult(result, resultRight);
+                    return getTypesResult(result, resultRight, getOpType((String)hashmaped.get("op")));
                 }
-            }
-        }
-
-        return null;
+            } else return result;
+            //Summand and expression have only left operands
+        } else if (mapedResultType.equals("summand")) return result;
+          else if (mapedResultType.equals("expression")) return result;
+          else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
+          return null;
     }
 
 
