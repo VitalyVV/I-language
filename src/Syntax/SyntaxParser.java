@@ -59,7 +59,8 @@ public class SyntaxParser {
                 temp.put("Content", parseSimpleDeclaration());
             }else if(word.equals("")){
                 break;
-            }else throw new WrongSyntaxException("Unable to find entry point");
+            }else throw new WrongSyntaxException("Invalid syntax");
+
             if(temp.containsKey("Content")){
                 content.add(temp);
             }

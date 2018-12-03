@@ -103,7 +103,6 @@ public class SemanticAnalyzer{
     public void analyze(ArrayList<HashMap<String, Object>> toAst){
         ProgramNode program = new ProgramNode("Program", toAst);
         visitRoot(program);
-
     }
 
 //    public void check(){
