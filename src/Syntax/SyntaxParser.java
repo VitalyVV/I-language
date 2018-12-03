@@ -23,6 +23,10 @@ public class SyntaxParser {
             "routine", "not", "for"
     };
 
+    public HashMap<String, Object> getTree() {
+        return tree;
+    }
+
     public SyntaxParser(ArrayList<String> tokens) throws WrongSyntaxException {
         this.tokens = tokens;
         tree.put("Root", this.parseProgram());
@@ -529,8 +533,9 @@ public class SyntaxParser {
         String word = tokens.get(index);
         temp.put("is", "summand");
         if(word.equals("$$lbr")){
-            temp.put("left", parseExpression());
             nextWord();
+            temp.put("left", parseExpression());
+            ++index;
         }else{
             temp.put("left", parsePrimary());
         }
