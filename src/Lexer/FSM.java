@@ -18,7 +18,7 @@ public class FSM {
                                 "end", "array", "while",
                                 "loop", "in", "reverse",
                                 "if", "then", "else",
-                                "routine", "not"
+                                "routine", "not", "for"
     };
 
     private ArrayList<String> tokens = new ArrayList<>();

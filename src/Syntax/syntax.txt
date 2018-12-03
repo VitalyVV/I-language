@@ -1,0 +1,216 @@
+"Root" : ArrayList<HashMap<String, Object>>
+//Root Content
+{
+"Section" : String
+"Content" : HashMap<String, Object> <=  VariableDeclaration, TypeDeclaration, RoutineDeclaration
+}
+
+RoutineDeclaration : HashMap<String, Object>
+{
+"statement" : (String)"declaration"
+"name" : String
+"parameters" : ArrayList<HashMap<String, Object>>  <= КАЖДЫЙ ЭЛЕМЕНТ ParametersDeclaration
+    type : (
+    "hastype" : (String) "true"
+    "type" : HashMap<String, Object> <= Type
+    )else(
+    "hastype" : (String) "false"
+    "type" : (String) "None"
+    )
+
+    body : (
+    "hasbody" : (String) "true"
+    "body" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Statement
+    )else(
+     "hasbody" : (String) "false"
+     "body" : (String) "None"
+    )
+
+}
+
+ParametersDeclaration : HashMap<String, Object>
+{
+"name" : String
+"type" : HashMap<String, Object> <= Type
+}
+
+VariableDeclaration : HashMap<String, Object>
+{
+"statement" : (String) "var"
+"name" : String
+    (
+        "hastype" : (String)"true"
+        "type" : HashMap<String, Object>
+    )else(
+        "hastype" : (String)"false"
+        "type" : (String) "None" // ТИП ДОЛЖЕН БЫТЬ ВЫВЕДЕН ИЗ VALUE В ЭТОМ СЛУЧАЕ
+    )
+? "value" : HashMap<String, Object> <= Expression
+}
+
+TypeDeclaration : HashMap<String, Object>
+{
+"statement" : (String) "type"
+"name" : String
+"type" : HashMap<String, Object> <= Type
+}
+
+Type : HashMap<String, Object>
+{
+   (
+   "primitive" : String
+   )else(
+   "array" : HashMap<String, Object> <= ArrayType
+   )else(
+   "record" : HashMap<String, Object> <= RecordType
+   )else (
+   "identifier" : String
+   )
+}
+
+ArrayType : HashMap<String, Object>
+{
+"length" : HashMap<String, Object> <= Expression
+"type" : HashMap<String, Object> <= Type
+}
+
+RecordType : HashMap<String, Object>
+{
+"N" : int
+"content" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ VariableDeclaration
+}
+
+Statement : HashMap<String, Object>
+{
+"Section" : (String) "Statement"
+"Content" : HashMap<String, Object>  <= Assignemnt, RoutineCall, WhileLoop, ForLoop, IfStatement
+}
+
+Assignment : HashMap<String, Object>
+{
+"statement": (String) "assignment"
+"name": HashMap<String, Object> <= ModifiablePrimary
+"value": HashMap<String, Object> <= Expression
+}
+
+RoutineCall : HashMap<String, Object>
+{
+ "statement" : (String) "call"
+ "variable" : String
+ "params" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Expression
+}
+
+WhileLoop : HashMap<String, Object>
+{
+"statement" : (String) "while"
+"expression" : HashMap<String, Object>
+"body" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Statement
+}
+
+ForLoop : HashMap<String, Object>
+{
+"statement" : (String) "for"
+"identifier" : String
+"reverse" : (String) "false" | "true"
+"range" : HashMap<String, Object> <= Range
+"body" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Statement
+}
+
+Range : HashMap<String, Object>
+{
+"expression_from" : HashMap<String, Object>
+"expression_to" : HashMap<String, Object>
+}
+
+IfStatement : HashMap<String, Object>
+{
+"statement" : (String) "if"
+"expression" : HashMap<String, Object>
+"else" : (String) "false" | "true"
+"body" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Statement
+"else_body" : ArrayList<HashMap<String, Object>> <= КАЖДЫЙ ЭЛЕМЕНТ Statement
+}
+
+Expression : HashMap<String, Object>
+{
+"is" : (String) "expression"
+"left" : HashMap<String, Object> <= Relation
+"hasright" : (String) "true" | false
+"op"  : (String) "and" | "or" | "xor"
+"right" : HashMap<String, Object> <= Expression, Relation
+}
+
+Relation : HashMap<String, Object>
+{
+"is" : (String) "relation"
+"left" : HashMap<String, Object> <= Simple
+"hasright" : (String) "true" | false
+"op"  : (String) "less" | "lesseq" | "great" | "greateq" | "eq" | "noteq"
+"right" : HashMap<String, Object> <= Relation, Simple
+}
+
+Simple : HashMap<String, Object>
+{
+"is" : (String) "simple"
+"left" : HashMap<String, Object> <= Factor
+"hasright" : (String) "true" | false
+"op"  : (String) "mul" | "div" | "perc"
+"right" : HashMap<String, Object> <= Simple, Factor
+}
+
+Factor : HashMap<String, Object>
+{
+"is" : (String) "factor"
+"left" : HashMap<String, Object> <= Summand
+"hasright" : (String) "true" | false
+"op"  : (String) "mul" | "div" | "perc"
+"right" : HashMap<String, Object> <= Factor, Summand
+}
+
+Summand : HashMap<String, Object>
+{
+"is" : (String) "summand"
+"left" : HashMap<String, Object> <= Primary, Expression
+}
+
+Summand : HashMap<String, Object>
+{
+
+is : (String) "primary"
+    (
+    "type" : (String)"boolean"
+    "value" : (String)"true" | "false"
+    )else(
+    "type" : (String)"integer"
+    ?"sign" : (String) "+" | "-" | "not"
+    "value" : String                        <= Valid Integer constant
+    ) else (
+    "type" : (String)"real"
+    ?"sign" : (String) "+" | "-" | "not"
+    "value" : String                        <= Valid Real constant
+    ) else (
+    "type" : (String)"modifiable"
+    "value" : HashMap<String, Object>       <= ModifiablePrimary
+    ) else (
+     "type" : (String)"routinecall"
+     "value" : HashMap<String, Object>      <= RoutineCall
+     )
+}
+
+
+ModifiablePrimary : HashMap<String, Object>
+{
+"statement" : (String) "modifiable"
+"value" : String
+"mods" : ArrayList<HashMap<String, Object>>
+            КАЖДЫЙ ЭЛЕМЕНТ
+            {
+                (
+                "type" : (String)"dot"
+                "value" : String
+                )else(
+                "type" : (String)"dot"
+                "value" : HashMap<String, Object> <= Expression
+                )
+            }
+}
