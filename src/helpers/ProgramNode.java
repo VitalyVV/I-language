@@ -23,7 +23,8 @@ public class ProgramNode extends Node {
     private LinkedList<String> namesRoutines = new LinkedList<>();
 
     //type declarations
-    //private  LinkedList<>
+    HashMap<String,String> typeMappings = new HashMap<>();
+
     private int currentChild = 0;
 
 
@@ -78,14 +79,14 @@ public class ProgramNode extends Node {
                     Symbol s = new Symbol(valueType, (String) rootUnit.get("name"), rootUnit);
                     symbolsDeclarations.put((String) rootUnit.get("name"), s);
                 }
-            }else if(unit.equals("declaration")){//if we have routine declaration "routine a() : integer"
+            } else if(unit.equals("declaration")){//if we have routine declaration "routine a() : integer"
                 RoutineNode routine = new RoutineNode((String) rootUnit.get("name"), rootUnit);
                 //we add it separate list of routines
                 routines.add(routine);
                 //we add name of routine to find previously declared ones + to check if we actually have declared it
                 namesRoutines.add((String) rootUnit.get("name"));
             }else if(unit.equals("type")){//if we have type declaration
-                System.out.println("EPTA ETO TIP");//TODO type declaration handling
+                typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));
             } else throw new Exception("Invalid syntax. Routine or declaration expected");
         }
 
@@ -115,6 +116,9 @@ public class ProgramNode extends Node {
             String typeVarName = (String)a.get("identifier");
             if (symbolsDeclarations.keySet().contains(typeVarName)){
                 return symbolsDeclarations.get(typeVarName).getType();
+            } else if (typeMappings.containsKey(typeVarName))
+            {
+                return typeMappings.get(typeVarName);
             }
             else throw new Exception("No such identifier declared: "+typeVarName);
         }
@@ -162,7 +166,7 @@ public class ProgramNode extends Node {
             if (((String)hashmaped.get("hasright")).equals("true")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
                 if (checkOperable(result, resultRight)){
-                    return getTypesResult(result, resultRight);
+                    return getTypesResult(result, resultRight, mapedResultType);
                 }
             } else return result;
             //Summand and expression have only left operands
