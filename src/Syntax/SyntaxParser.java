@@ -59,7 +59,8 @@ public class SyntaxParser {
                 temp.put("Content", parseSimpleDeclaration());
             }else if(word.equals("")){
                 break;
-            }else throw new WrongSyntaxException("Unable to find entry point");
+            }else throw new WrongSyntaxException("Invalid syntax");
+
             if(temp.containsKey("Content")){
                 content.add(temp);
             }
@@ -562,6 +563,7 @@ public class SyntaxParser {
         if(word.equals("$$true") || word.equals("$$false")){
             temp.put("type", "boolean");
             temp.put("value", word.replaceAll("\\$", ""));
+            ++index;
         }else if(word.equals("$$add") || word.equals("$$sub") || word.equals("$$not")
                     || parseIntegerLiteral(word) || parseRealLiteral(word)) {
 

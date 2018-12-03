@@ -50,12 +50,13 @@ public class ProgramNode extends Node {
     public String getOpType(String op) throws OperationNotSupportedException {
         List<String> factors = Arrays.asList("div","mul","perc");
         List<String> summands = Arrays.asList("sub","add");
-        List<String> relations = Arrays.asList("less", "lesseq", "great","greateq", "eq", "noteq");
-
+        List<String> relations = Arrays.asList("and", "or", "xor");
+        List<String> simple = Arrays.asList("less", "lesseq", "great","greateq", "eq", "noteq");
 
         if (factors.contains(op))return "factor";
         else if (summands.contains(op))return "summand";
         else if (relations.contains(op))return "relation";
+        else if (simple.contains(op)) return  "simple";
         else throw new OperationNotSupportedException("Invalid operand: "+ op);
     }
 
@@ -99,6 +100,7 @@ public class ProgramNode extends Node {
                 //we add name of routine to find previously declared ones + to check if we actually have declared it
                 namesRoutines.add((String) rootUnit.get("name"));
             }else if(unit.equals("type")){//if we have type declaration
+                //Add type mapping to the list
                 typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));
             } else throw new Exception("Invalid syntax. Routine or declaration expected");
         }
@@ -131,6 +133,7 @@ public class ProgramNode extends Node {
                 return symbolsDeclarations.get(typeVarName).getType();
             } else if (typeMappings.containsKey(typeVarName))
             {
+                //Get mapped basic type from the list
                 return typeMappings.get(typeVarName);
             }
             else throw new Exception("No such identifier declared: "+typeVarName);
