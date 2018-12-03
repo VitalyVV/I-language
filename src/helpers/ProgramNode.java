@@ -145,7 +145,40 @@ public class ProgramNode extends Node {
                 return typePrimary;
             }
             else if (typePrimary.equals("modifiable")){
-                return null;
+                HashMap<String, Object> modifvar = (HashMap<String, Object>) hashmaped.get("value");
+                String modifName = (String) modifvar.get("value");
+                if (((ArrayList<HashMap<String, Object>>)modifvar.get("mods")).isEmpty()) {
+                    if (symbolsDeclarations.keySet().contains(modifName)){
+                        return symbolsDeclarations.get(modifName).getType();
+                    }
+                    else if (namesRoutines.contains(modifName)){
+                        int ind = namesRoutines.indexOf(modifName);
+                        return routines.get(ind).getResultType();
+                    }
+                    else throw new Exception("No such identifier declared: "+modifName);
+                }
+                else{
+                    ArrayList<HashMap<String, Object>> mods = (ArrayList<HashMap<String, Object>>)modifvar.get("mods");
+                    String submode = modifName;
+                    String type = "";
+
+                    //TODO - maybe add list for usertypes
+                    if (symbolsDeclarations.keySet().contains(modifName)){
+//                        ArrayList<HashMap<String, Object>> mods1 = (ArrayList<HashMap<String, Object>>)symbolsDeclarations.get(modifName).;
+//                        for (HashMap<String, Object> elem:mods){
+//                            if (((String) elem.get("type")).equals("dot")){
+//                                if (symbolsDeclarations.get(modifName)){
+//                                    return symbolsDeclarations.get(modifName).getType();
+//                                }
+//                                else if (namesRoutines.contains(modifName)){
+//                                    int ind = namesRoutines.indexOf(modifName);
+//                                    return routines.get(ind).getResultType();
+//                                }
+//                                else throw new Exception("No such identifier declared: "+modifName);
+//                            }
+//                        }
+                    }
+                }
             }
             else if (typePrimary.equals("routinecall")){
                 HashMap<String, Object> hashmapedRotineCall = (HashMap<String, Object>) hashmaped.get("type");
