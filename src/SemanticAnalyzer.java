@@ -66,6 +66,8 @@ public class SemanticAnalyzer{
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
+
+        //get all declared variables
         try{
             LinkedHashMap<String, Symbol> symbols = node.getSymbols();
             if (symbols!=null) globalScope.insert(symbols);
@@ -76,6 +78,8 @@ public class SemanticAnalyzer{
 
         globalScope.printTable();
         //TODO - check declared values
+
+        //go through every declared routine symbol table
         while(true){
             RoutineNode rnode = node.getChild();
             if (rnode == null) break;

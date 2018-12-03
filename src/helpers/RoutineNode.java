@@ -13,6 +13,10 @@ public class RoutineNode extends Node {
         this.routine = routine;
     }
 
+    public String getResultType(){
+        return null;
+    }
+
     public String getMethod(){
         return "Routine";
     }
