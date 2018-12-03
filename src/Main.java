@@ -31,8 +31,12 @@ public class Main {
         map.put("type", type);
         HashMap<String, Object> subtree = new HashMap<>();
         subtree.put("Content",map);
+
+
         ArrayList<HashMap<String, Object>> tree = new ArrayList<>();
         tree.add(subtree);
+
+
         ss.analyze(tree);
 
     }
