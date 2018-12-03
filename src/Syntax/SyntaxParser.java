@@ -255,7 +255,6 @@ public class SyntaxParser {
                     params.add(parseExpression());
                     word = nextWord();
                     if(!word.equals("$$comm")){
-                        //TODO: maybe error?
                     }
                 }
             }
@@ -591,12 +590,14 @@ public class SyntaxParser {
                 ++index;
             }
         }else if(parseIdentifier(word)){
+            ++index;
             String op = nextWord();
             --index;
-            if(op.equals("lbr")){
+            if(op.equals("$$lbr")){
                 temp.put("type", "routinecall");
                 temp.put("value", parseRoutineCall(word));
             }else{
+                --index;
                 temp.put("type", "modifiable");
                 temp.put("value", parseModifiablePrimary());
             }
