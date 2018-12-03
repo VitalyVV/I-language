@@ -27,6 +27,10 @@ public class SyntaxParser {
         return tree;
     }
 
+    public ArrayList<HashMap<String, Object>> getRoot() {
+        return (ArrayList<HashMap<String,Object>>) tree.get("Root");
+    }
+
     public SyntaxParser(ArrayList<String> tokens) throws WrongSyntaxException {
         this.tokens = tokens;
         tree.put("Root", this.parseProgram());

@@ -19,26 +19,7 @@ public class Main {
         }
         lx.parseString(s);
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
-		
-		//Syntax analysis done.
-
         SemanticAnalyzer ss = new SemanticAnalyzer();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("statement", "var");
-        map.put("name", "a");
-        map.put("hastype", "true");
-
-        HashMap<String, Object> type = new HashMap<>();
-        type.put("primitive", "int");
-        map.put("type", type);
-        HashMap<String, Object> subtree = new HashMap<>();
-        subtree.put("Content",map);
-
-
-        ArrayList<HashMap<String, Object>> tree = new ArrayList<>();
-        tree.add(subtree);
-
-
-        ss.analyze(tree);
+        ss.analyze(sp.getRoot());
     }
 }

@@ -56,12 +56,12 @@ public class ProgramNode extends Node {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
                     //Vars that have type may have "is" expressions too
-                    if (rootUnit.containsKey("expression"))
+                    if (rootUnit.containsKey("value"))
                     {
                         String varType = getType((HashMap<String,Object>) rootUnit.get("type"));
 
                         //Inference expression type
-                        String expressionResult = calculateExpressionResult(rootUnit.get("expression"));
+                        String expressionResult = calculateExpressionResult(rootUnit.get("value"));
                         //If expression type is the same as declared type
                         if (expressionResult.equals(varType))
                         {
