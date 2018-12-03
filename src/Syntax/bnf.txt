@@ -1,53 +1,69 @@
-Program : SimpleDeclaration
++Program : SimpleDeclaration
         | RoutineDeclaration
 
-SimpleDeclaration : VariableDeclaration
++SimpleDeclaration : VariableDeclaration
                   | TypeDeclaration
 
-VariableDeclaration : "var" Identifier "col" Type ( "is" Expression )
++VariableDeclaration : "var" Identifier "col" Type ("is" Expression)
                     | "var" Identifier "is" Expression
 
-TypeDeclaration : "type" Identifier "is" Type
++TypeDeclaration : "type" Identifier "is" Type
 
-Type : PrimitiveType
++Type : PrimitiveType
      | UserType
      | Identifier
 
-PrimitiveType : "int"
++PrimitiveType : "int"
               | "real"
               | "bool"
 
-UserType : ArrayType
++UserType : ArrayType
          | RecordType
 
-RecordType : "record" "lfbr" VariableDeclaration "rfbr" "end"
++RecordType : "record" {VariableDeclaration} "end"
 
-ArrayType : "array" "lsbr" Expression "rsbr" Type
++ArrayType : "array" "lsbr" Expression "rsbr" Type
 
-Statement : Assignment
++Statement : Assignment
           | RoutineCall
           | WhileLoop
           | ForLoop
           | IfStatement
 
-Assignment : ModifiablePrimary "ass" Expression
++Assignment : ModifiablePrimary "ass" Expression
 
-RoutineCall : Identifier [ "lbr" Expression {"comm" Expression} "rbr" ]
++RoutineCall : Identifier [ "lbr" Expression {"comm" Expression} "rbr" ]
 
-WhileLoop : "while" Expression "loop" Body "end"
++WhileLoop : "while" Expression "loop" Body "end"
 
-ForLoop : "for" Identifier "in" ["reverse"] Range "loop" Body "end"
++ForLoop : "for" Identifier "in" ["reverse"] Range "loop" Body "end"
 
-Range : Expression ".." Expression
++Range : Expression ".." Expression
 
-IfStatement : "if" Expression "then" Body ["else" Body] "end"
++IfStatement : "if" Expression "then" Body ["else" Body] "end"
 
-RoutineDeclaration : "routine" Identifier [ Parameters ] [ "col" Type ] [ "is" Body "end" ]
++RoutineDeclaration : "routine" Identifier [ Parameters ] [ "col" Type ] [ "is" Body "end" ]
 
-Parameters : "lbr" ParameterDeclaration { "comm" ParameterDeclaration } "rbr"
++Parameters : "lbr" ParameterDeclaration { "comm" ParameterDeclaration } "rbr"
 
-ParameterDeclaration : Identifier "col" Type
++ParameterDeclaration : Identifier "col" Type
 
-Body : "lfbr" (SimpeDeclaration | Statement) "rfbr"
++Body : { (SimpeDeclaration | Statement) }
 
-Expression : Relation { ("and" | "or" | "xor") } Relation
++Expression : Relation { ("and" | "or" | "xor") } Relation
+Relation : Simple [ ( "less" | "lesseq" | "great" | "greateq" | "eq" | "noteq" ) Simple ]
+Simple : Factor { ( mul | "div" | "perc" ) Factor }
+Factor : Summand { ( "add" | "sub" ) Summand }
+Summand : Primary | "lbr" Expression "rbr"
+Primary : [ Sign | "not" ] IntegerLiteral
+        | [ Sign ] RealLiteral
+        | "true"
+        | "false"
+        | ModifiablePrimary
+        | RoutineCall
+Sign : "add" | "sub"
+
+ModifiablePrimary: Identifier { "dot" Identifier | "lsbr" Expression "rsbr" }
+
+IntegerLiteral
+RealLiteral

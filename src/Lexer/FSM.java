@@ -10,7 +10,7 @@ public class FSM {
     private int state = 1;
     private String buf = "";
     private String[] symbols = {"/=", "+", "-", "*", "=", "/", ">", "<", ">=", "<=",
-                                ":=", "(", ")", "[", "]", "{", "}", ",", ";", ":", "%"};
+                                ":=", "(", ")", "[", "]", "{", "}", ",", ";", ":", "%", ".."};
     private String[] keywords = {"and", "or", "not", "and",
                                 "or", "var", "is", "type",
                                 "integer", "real", "boolean",
@@ -18,7 +18,7 @@ public class FSM {
                                 "end", "array", "while",
                                 "loop", "in", "reverse",
                                 "if", "then", "else",
-                                "routine", "not"
+                                "routine", "not", "for"
     };
 
     private ArrayList<String> tokens = new ArrayList<>();
@@ -45,21 +45,27 @@ public class FSM {
         for (int i = 0; i < symbols.length; i++) {
             String s = "";
             s = Character.toString(ch);
-            if (ch=='/'){
-                if (input[cur + 1] == '='){
-                    s = ch + "=";
-                }
-            } else if(ch==':'){
-                if (input[cur + 1] == '='){
-                    s = ch + "=";
-                }
-            } else if (ch == '>') {
-                if (input[cur + 1] == '='){
-                    s = ch + "=";
-                }
-            } else if (ch == '<') {
-                if (input[cur + 1] == '=') {
-                    s = ch + "=";
+            if (cur + 1 < input.length){
+                if (ch=='/'){
+                    if (input[cur + 1] == '='){
+                        s = ch + "=";
+                    }
+                } else if(ch==':'){
+                    if (input[cur + 1] == '='){
+                        s = ch + "=";
+                    }
+                } else if (ch == '>') {
+                    if (input[cur + 1] == '='){
+                        s = ch + "=";
+                    }
+                } else if (ch == '<') {
+                    if (input[cur + 1] == '=') {
+                        s = ch + "=";
+                    }
+                } else if(ch == '.') {
+                    if (input[cur + 1] == '.') {
+                        s = ch + ".";
+                    }
                 }
             }
 
@@ -70,23 +76,36 @@ public class FSM {
     }
 
     private boolean isComplex(char ch){
-        String s;
-        s = Character.toString(ch);
-        if (ch=='/' || ch == ':' || ch == '>' || ch == '<'){
-            if (input[cur + 1] == '=') {
-                return true;
+        if (ch=='/' || ch == ':' || ch == '>' || ch == '<' || ch == '.'){
+            if (cur+1 < input.length) {
+                if (input[cur + 1] == '=' || input[cur + 1] == '.') {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private String getComplex(){
+        if(input[cur] == '.'){
+            return input[cur] + ".";
+        }
         return input[cur] + "=";
     }
 
     private void initialState(){
         if (Character.isDigit(input[cur]) || input[cur]=='.'){
-            state = input[cur]=='.' ? 6 : 2;
+            if (cur+1 < input.length) {
+                if (input[cur + 1] != '.') {
+                    state = input[cur] == '.' ? 6 : 2;
+                }else{
+                    state=1;
+                    tokens.add(getComplex());
+                    cur += 2;
+                }
+            }else {
+                state = input[cur] == '.' ? 6 : 2;
+            }
             buf += input[cur];
         }
         if (in(input[cur])) {
@@ -98,13 +117,15 @@ public class FSM {
                 tokens.add(Character.toString(input[cur]));
             }
         }
-        if(Character.isAlphabetic(input[cur]) || input[cur] == '"'){
-            if (input[cur] == '"'){
-                state=7;
-            }else{
-                state=3;
+        if(cur < input.length){
+            if(Character.isAlphabetic(input[cur]) || input[cur] == '"'){
+                if (input[cur] == '"'){
+                    state=7;
+                }else{
+                    state=3;
+                }
+                buf += input[cur];
             }
-            buf += input[cur];
         }
     }
 
@@ -116,31 +137,50 @@ public class FSM {
     }
 
     private void parseState(){
+        // State 2 for parsing difits
         if (state == 2){
             if (Character.isDigit(input[cur])) {
                 buf+=input[cur];
             }else if (input[cur] == '.'){
-                state = 6;
-                buf+=input[cur];
+                if (cur+1 < input.length) {
+                    if (input[cur + 1] == '.') {
+                        flush();
+                        --cur;
+                    }else {
+                        state = 6;
+                        buf += input[cur];
+                    }
+                }else {
+                    state = 6;
+                    buf += input[cur];
+                }
             }else{
                flush();
                --cur;
             }
+        // State 3 for parsing words
         } else if (state == 3){
             if(Character.isAlphabetic(input[cur]) || input[cur]=='"'){
                 if (input[cur]=='"'){
                     state=7;
                 }
                 buf += input[cur];
-                if (isKeyword(buf)) {
-                    flush();
+                if(cur + 1 < input.length){
+                    if (!Character.isAlphabetic(input[cur+1])) {
+                        if (isKeyword(buf)) {
+                            flush();
+                        }
+                    }
                 }
+
             }else{
                 flush();
                 --cur;
             }
+            // state 4 intermediate to write keywords
         } else if (state == 4){
             flush();
+            //6 to write values after dot in floating point
         }else if(state == 6){
             if (Character.isDigit(input[cur])){
                 buf += input[cur];
@@ -150,6 +190,7 @@ public class FSM {
             }
         }else if(state == 1){
             initialState();
+            //if string passed
         }else if(state==7){
             buf += input[cur];
             if (input[cur]=='"'){
