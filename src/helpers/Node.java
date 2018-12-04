@@ -15,7 +15,7 @@ public abstract class Node {
     //type declarations
     protected HashMap<String,String> typeMappings = new HashMap<>();
 
-    Iterator<Map.Entry<String,Symbol>>entries = symbolsDeclarations.entrySet().iterator();
+    Iterator<Map.Entry<String,Symbol>>entries;
     //list of routines only
     protected LinkedList<RoutineNode> routines = new LinkedList<>();
     protected LinkedList<String> namesRoutines = new LinkedList<>();
@@ -177,6 +177,7 @@ public abstract class Node {
 
         if (currentChild>symbolsDeclarations.size()-1) return null;
         Map.Entry<String,Symbol> entry = entries.next();
+        currentChild++;
         //update the pointer for routine we have not visited before
         return entry;
     }

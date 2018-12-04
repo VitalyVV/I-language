@@ -39,7 +39,7 @@ public class RoutineNode extends Node {
     }
 
     public String getMethod(){
-        return "Routine";
+        return "routine";
     }
     LinkedHashMap<String, Symbol> symbols = new LinkedHashMap<>();
 
@@ -68,8 +68,6 @@ public class RoutineNode extends Node {
                     }
                 }
             }
-
-
         }
         if (routine.keySet().contains("hasbody")){
             parseRoutineBody(routine.get("body"));

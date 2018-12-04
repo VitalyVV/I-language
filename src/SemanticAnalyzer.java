@@ -59,14 +59,14 @@ public class SemanticAnalyzer{
 //    }
 //    }
 
-    private void visitRoot(ProgramNode node){
+    private void visitRoot(ProgramNode node) throws Exception {
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
+        node.getSymbols();
         while (true){
             Map.Entry<String, Symbol> entry = node.getChild();
             if (entry == null) break;
-
             Symbol s = entry.getValue();
             if (s.getType().equals("routine")){
                 RoutineNode rnode = new RoutineNode(entry.getKey(), (HashMap<String, Object>)s.getUnit());
@@ -149,7 +149,7 @@ public class SemanticAnalyzer{
     }
 
 
-    public void analyze(ArrayList<HashMap<String, Object>> toAst){
+    public void analyze(ArrayList<HashMap<String, Object>> toAst) throws Exception {
         ProgramNode program = new ProgramNode("Program", toAst);
         visitRoot(program);
     }
