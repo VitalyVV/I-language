@@ -95,18 +95,22 @@ public class FSM {
 
     private void initialState(){
         if (Character.isDigit(input[cur]) || input[cur]=='.'){
-            if (cur+1 < input.length) {
-                if (input[cur + 1] != '.') {
-                    state = input[cur] == '.' ? 6 : 2;
-                }else{
-                    state=1;
-                    tokens.add(getComplex());
-                    cur += 2;
-                }
-            }else {
-                state = input[cur] == '.' ? 6 : 2;
+            if (cur < input.length){
+                    if (cur+1 < input.length) {
+                        if (input[cur] == '.') {
+                            if (input[cur + 1] != '.') {
+                                state = input[cur] == '.' ? 6 : 2;
+                            } else {
+                                flush();
+                                tokens.add(getComplex());
+                                cur += 2;
+                            }
+                        }
+                    }else {
+                        state = input[cur] == '.' ? 6 : 2;
+                    }
+                buf += input[cur];
             }
-            buf += input[cur];
         }
         if (in(input[cur])) {
             state=1;
@@ -132,7 +136,9 @@ public class FSM {
 
     private void flush(){
         state = 1;
-        tokens.add(buf);
+        if(!buf.equals("")){
+            tokens.add(buf);
+        }
         buf = "";
     }
 
