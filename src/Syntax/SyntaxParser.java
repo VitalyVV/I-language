@@ -125,15 +125,8 @@ public class SyntaxParser {
             if (word.equals("$$col")) {
                 temp.put("hastype", "true");
                 temp.put("type", parseType());
-                if (((HashMap<String, Object>) temp.get("type")).containsKey("array")) {
-                    return temp;
-                }
-                if (((HashMap<String, Object>) temp.get("type")).containsKey("record")) {
-                    return temp;
-                }
                 word = nextWord();
                 if (word.equals("$$is")) {
-
                     temp.put("value", parseExpression());
                     return temp;
                 } else {
