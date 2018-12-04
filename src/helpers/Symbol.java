@@ -5,8 +5,8 @@ import java.util.HashMap;
 //keeps information about the symbol: its name and type
 //maybe a value should be added too, if it will be necessary for some semantics checks
 public class Symbol {
-
-    public Symbol(String type, String name, HashMap<String, Object> unit){
+//public Symbol(String type, String name, HashMap<String, Object> unit){
+    public Symbol(String type, String name, Object unit){
         this.name = name;
         this.type = type;
         this.unit = unit;
@@ -15,7 +15,7 @@ public class Symbol {
     private String name;
 
     private String type;
-    private HashMap<String, Object> unit;
+    private Object unit;
 
     public String getName(){
         return name;
@@ -23,6 +23,10 @@ public class Symbol {
 
     public String getType(){
         return type;
+    }
+
+    public Object getUnit(){
+        return unit;
     }
 
 

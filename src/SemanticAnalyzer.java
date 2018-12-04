@@ -1,7 +1,4 @@
-import helpers.Node;
-import helpers.ProgramNode;
-import helpers.RoutineNode;
-import helpers.Symbol;
+import helpers.*;
 
 import java.util.*;
 
@@ -66,37 +63,89 @@ public class SemanticAnalyzer{
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
+        while (true){
+            Map.Entry<String, Symbol> entry = node.getChild();
+            if (entry == null) break;
 
-        //get all declared variables
-        try{
-            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
-            if (symbols!=null) globalScope.insert(symbols);
-        }catch (Exception e){
-            e.printStackTrace();
-            return;
+            Symbol s = entry.getValue();
+            if (s.getType().equals("routine")){
+                RoutineNode rnode = new RoutineNode(entry.getKey(), (HashMap<String, Object>)s.getUnit());
+                visitRoutine(rnode);
+            }
+
+            globalScope.insert(s);
+            globalScope.printTable();
         }
 
-        globalScope.printTable();
-        //TODO - check declared values
+//        //get all declared variables
+//        try{
+//            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
+//            if (symbols!=null) globalScope.insert(symbols);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        //TODO - check declared values
+//
+//        //go through every declared routine symbol table
+//        while(true){
+//            RoutineNode rnode = node.getChild();
+//            if (rnode == null) break;
+//            globalScope.insert(new Symbol("routine", rnode.getName(), rnode.getRoutine()));
+//            visitRoutine(rnode);
+//        }
+    }
 
-        //go through every declared routine symbol table
-        while(true){
-            RoutineNode rnode = node.getChild();
-            if (rnode == null) break;
-            globalScope.insert(new Symbol("routine", rnode.getName(), rnode.getRoutine()));
-            visitRoutine(rnode);
+    private void visitRoutine (RoutineNode node) {
+        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
+        currentScope = procScope;
+        System.out.println(procScope.name + " " + procScope.level);
+
+
+        while (true) {
+            Map.Entry<String, Symbol> entry = node.getChild();
+            if (entry == null) break;
+
+            Symbol s = entry.getValue();
+            if (s.getType().equals("if")) {
+                IfNode rnode = new IfNode(entry.getKey(), (HashMap<String, Object>) s.getUnit());
+                visitIf(rnode);
+            }
+            else if (s.getType().equals("while")) {
+                WhileNode rnode = new WhileNode(entry.getKey(), (HashMap<String, Object>) s.getUnit());
+                visitWhile(rnode);
+            }
+            else if (s.getType().equals("for")) {
+                ForLoopNode rnode = new ForLoopNode(entry.getKey(), (HashMap<String, Object>) s.getUnit());
+                visitForLoop(rnode);
+            }
+
+            procScope.insert(s);
+           procScope.printTable();
+
+
+            this.currentScope = this.currentScope.enclosingScope;
+
         }
     }
 
-    private void visitRoutine (RoutineNode node){
-        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level+1, this.currentScope);
+    private void visitIf (IfNode node){
+        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
         currentScope = procScope;
-        System.out.println(procScope.name+" "+procScope.level);
-        //fetching parameters - TODO
+        System.out.println(procScope.name + " " + procScope.level);
+    }
 
-//        visit(node.getChild());
-        this.currentScope = this.currentScope.enclosingScope;
+    private void visitWhile(WhileNode node){
+        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
+        currentScope = procScope;
+        System.out.println(procScope.name + " " + procScope.level);
+    }
 
+    private void visitForLoop(ForLoopNode node){
+        SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
+        currentScope = procScope;
+        System.out.println(procScope.name + " " + procScope.level);
     }
 
 
