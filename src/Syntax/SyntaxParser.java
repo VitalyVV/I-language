@@ -38,7 +38,7 @@ public class SyntaxParser {
 
     private String nextWord() {
         String word = "";
-        if (index + 1 < tokens.size()) {
+        if (index < tokens.size()) {
             word = tokens.get(index);
             ++index;
         }
@@ -181,7 +181,7 @@ public class SyntaxParser {
         } else {
             if (parseIdentifier(word)) {
                 temp.put("identifier", word.replaceAll("\\$", ""));
-            } throw new WrongSyntaxException("Incorrect identifier for type declaration. Got: " + word);
+            }else throw new WrongSyntaxException("Incorrect identifier for type declaration. Got: " + word);
         }
         return temp;
     }

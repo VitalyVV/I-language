@@ -105,9 +105,9 @@ public class FSM {
                                 tokens.add(getComplex());
                                 cur += 2;
                             }
+                        } else {
+                            state = input[cur] == '.' ? 6 : 2;
                         }
-                    }else {
-                        state = input[cur] == '.' ? 6 : 2;
                     }
                 buf += input[cur];
             }
