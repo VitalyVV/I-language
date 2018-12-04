@@ -212,11 +212,16 @@ public class SyntaxParser {
         HashMap<String, Object> temp = new HashMap<>();
         String word = nextWord();
 
-        if (word.equals("$$lsbr")) {
-            temp.put("length", parseExpression());
-            word = nextWord();
-            if (word.equals("$$rsbr")) {
-                temp.put("type", parseType());
+        if (word.equals("$$lsbr") || word.equals("$$is")) {
+            if (word.equals("$$is")){
+                temp.put("expression", parseExpression());
+                word = nextWord();
+            }else {
+                temp.put("length", parseExpression());
+                word = nextWord();
+                if (word.equals("$$rsbr")) {
+                    temp.put("type", parseType());
+                }
             }
         }
         return temp;
