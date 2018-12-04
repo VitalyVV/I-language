@@ -59,14 +59,14 @@ public class SemanticAnalyzer{
 //    }
 //    }
 
-    private void visitRoot(ProgramNode node) throws Exception {
+    private void visitRoot(ProgramNode node){
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
 
-        node.getSymbols();
         while (true){
             Map.Entry<String, Symbol> entry = node.getChild();
             if (entry == null) break;
+
             Symbol s = entry.getValue();
             if (s.getType().equals("routine")){
                 RoutineNode rnode = new RoutineNode(entry.getKey(), (HashMap<String, Object>)s.getUnit());
@@ -77,15 +77,18 @@ public class SemanticAnalyzer{
             globalScope.printTable();
         }
 
-//        //get all declared variables
-//        try{
-//            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
-//            if (symbols!=null) globalScope.insert(symbols);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return;
-//        }
-//
+        //get all declared variables
+        try{
+            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
+            if (symbols!=null) globalScope.insert(symbols);
+            for (String key: symbols.keySet()){
+                System.out.println(key+" "+symbols.get(key).getType().toString());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return;
+        }
+
 //        //TODO - check declared values
 //
 //        //go through every declared routine symbol table
@@ -149,7 +152,7 @@ public class SemanticAnalyzer{
     }
 
 
-    public void analyze(ArrayList<HashMap<String, Object>> toAst) throws Exception {
+    public void analyze(ArrayList<HashMap<String, Object>> toAst){
         ProgramNode program = new ProgramNode("Program", toAst);
         visitRoot(program);
     }
