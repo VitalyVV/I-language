@@ -50,19 +50,21 @@ public class SyntaxParser {
         String word = nextWord();
         while (index < tokens.size()) {
             HashMap<String, Object> temp = new HashMap<>();
-            if (word.equals("$$routine")) {
-                temp.put("Section", "Statement");
-                temp.put("Content", parseRoutineDeclaration());
-            } else if (word.equals("$$var") || word.equals("$$type")) {
-                --index;
-                temp.put("Section", "Statement");
-                temp.put("Content", parseSimpleDeclaration());
-            } else if (word.equals("")) {
-                break;
-            } else throw new WrongSyntaxException("Invalid syntax");
+            if(!word.equals("$$semicol")) {
+                if (word.equals("$$routine")) {
+                    temp.put("Section", "Statement");
+                    temp.put("Content", parseRoutineDeclaration());
+                } else if (word.equals("$$var") || word.equals("$$type")) {
+                    --index;
+                    temp.put("Section", "Statement");
+                    temp.put("Content", parseSimpleDeclaration());
+                } else if (word.equals("")) {
+                    break;
+                } else throw new WrongSyntaxException("Invalid syntax");
 
-            if (temp.containsKey("Content")) {
-                content.add(temp);
+                if (temp.containsKey("Content")) {
+                    content.add(temp);
+                }
             }
             word = nextWord();
         }
@@ -255,7 +257,7 @@ public class SyntaxParser {
         return temp;
     }
 
-    private HashMap<String, Object> parseRoutineCall(String name) {
+    private HashMap<String, Object> parseRoutineCall(String name) throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("statement", "call");
         temp.put("variable", name);
@@ -400,8 +402,10 @@ public class SyntaxParser {
         ArrayList<HashMap<String, Object>> content = new ArrayList<>();
         String word = nextWord();
         while (!word.equals("$$end") && !word.equals("$$else") && !word.equals("")) {
-            --index;
-            content.add(parseStatement());
+            if(!word.equals("$$semicol")){
+                --index;
+                content.add(parseStatement());
+            }
             word = nextWord();
         }
         --index;
@@ -409,7 +413,7 @@ public class SyntaxParser {
     }
 
     //Expression : Relation { ("$$and" | "$$or" | "xor") } Relation
-    private HashMap<String, Object> parseExpression() {
+    private HashMap<String, Object> parseExpression() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseRelation());
         temp.put("is", "expression");
@@ -449,7 +453,7 @@ public class SyntaxParser {
 
 
     //Relation : Simple [ ( "$$less" | "$$lesseq" | "$$great" | "$$greateq" | "$$eq" | "noteq" ) Simple ]
-    private HashMap<String, Object> parseRelation() {
+    private HashMap<String, Object> parseRelation() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseSimple());
         temp.put("is", "relation");
@@ -493,7 +497,7 @@ public class SyntaxParser {
     }
 
     //Simple : Factor { ( "mul" | "div" | "perc" ) Factor }
-    private HashMap<String, Object> parseSimple() {
+    private HashMap<String, Object> parseSimple() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseFactor());
         temp.put("is", "simple");
@@ -532,7 +536,7 @@ public class SyntaxParser {
     }
 
     // Factor : Summand { ( "add" | "sub" ) Summand }
-    private HashMap<String, Object> parseFactor() {
+    private HashMap<String, Object> parseFactor() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseSummand());
         String word = "";
@@ -571,7 +575,7 @@ public class SyntaxParser {
     }
 
     //Summand : Primary | "lbr" Expression "rbr"
-    private HashMap<String, Object> parseSummand() {
+    private HashMap<String, Object> parseSummand() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = "";
         if (index < tokens.size()) {
@@ -597,7 +601,7 @@ public class SyntaxParser {
         | ModifiablePrimary
         | RoutineCall
      */
-    private HashMap<String, Object> parsePrimary() {
+    private HashMap<String, Object> parsePrimary() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = "";
         if (index < tokens.size()) {
@@ -668,7 +672,7 @@ public class SyntaxParser {
     }
 
     //ModifiablePrimary: Identifier { "$$dot" Identifier | "lsbr" Expression "rsbr" }
-    private HashMap<String, Object> parseModifiablePrimary() {
+    private HashMap<String, Object> parseModifiablePrimary() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("statement", "modifiable");
         String word = nextWord();
@@ -688,7 +692,7 @@ public class SyntaxParser {
                         }
                         if (parseIdentifier(word)) {
                             temp2.put("value", word.replaceAll("\\$", ""));
-                        }//TODO: maybe error?
+                        }else throw new WrongSyntaxException("Incorrect identifier. Got: " + word);
                     } else {
                         temp2.put("type", "expression");
                         temp2.put("value", parseExpression());
