@@ -107,6 +107,8 @@ public class ProgramNode extends Node {
 //        s.add(s1);
 //        s.add(s2);
 //        return s;
+
+        entries = symbolsDeclarations.entrySet().iterator();
         return symbolsDeclarations;
     }
 

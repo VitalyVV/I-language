@@ -20,7 +20,11 @@ public class Main {
         lx.parseString(s);
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
         SemanticAnalyzer ss = new SemanticAnalyzer();
-        ss.analyze(sp.getRoot());
+        try {
+            ss.analyze(sp.getRoot());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }
