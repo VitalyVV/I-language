@@ -50,19 +50,21 @@ public class SyntaxParser {
         String word = nextWord();
         while (index < tokens.size()) {
             HashMap<String, Object> temp = new HashMap<>();
-            if (word.equals("$$routine")) {
-                temp.put("Section", "Statement");
-                temp.put("Content", parseRoutineDeclaration());
-            } else if (word.equals("$$var") || word.equals("$$type")) {
-                --index;
-                temp.put("Section", "Statement");
-                temp.put("Content", parseSimpleDeclaration());
-            } else if (word.equals("")) {
-                break;
-            } else throw new WrongSyntaxException("Invalid syntax");
+            if(!word.equals("$$semicol")) {
+                if (word.equals("$$routine")) {
+                    temp.put("Section", "Statement");
+                    temp.put("Content", parseRoutineDeclaration());
+                } else if (word.equals("$$var") || word.equals("$$type")) {
+                    --index;
+                    temp.put("Section", "Statement");
+                    temp.put("Content", parseSimpleDeclaration());
+                } else if (word.equals("")) {
+                    break;
+                } else throw new WrongSyntaxException("Invalid syntax");
 
-            if (temp.containsKey("Content")) {
-                content.add(temp);
+                if (temp.containsKey("Content")) {
+                    content.add(temp);
+                }
             }
             word = nextWord();
         }
@@ -70,7 +72,7 @@ public class SyntaxParser {
 
     }
 
-    private HashMap<String, Object> parseSimpleDeclaration() {
+    private HashMap<String, Object> parseSimpleDeclaration() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = nextWord();
         if (word.equals("$$var")) {
@@ -108,11 +110,11 @@ public class SyntaxParser {
                 temp.put("hasbody", "false");
                 temp.put("body", "None");
             }
-        } //Todo: maybe error?
+        } else throw new WrongSyntaxException("Incorrect name for routine declaration. Got: " + word);
         return temp;
     }
 
-    private HashMap<String, Object> parseVariableDeclaration() {
+    private HashMap<String, Object> parseVariableDeclaration() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<String, Object>();
         String word = nextWord();
         temp.put("statement", "var");
@@ -141,13 +143,15 @@ public class SyntaxParser {
                 temp.put("hastype", "false");
                 temp.put("type", "None");
                 temp.put("expression", parseExpression());
-            } //TODO :Maybe error?
-        } //TODO :Maybe error?
+            } else{
+                throw new WrongSyntaxException("Unexpected token: " + word + " ':' or 'is' expected in variable declaration.");
+            }
+        } else throw new WrongSyntaxException("Incorrect name for variable. Got: " + word);
 
         return temp;
     }
 
-    private HashMap<String, Object> parseTypeDeclaration() {
+    private HashMap<String, Object> parseTypeDeclaration() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<String, Object>();
         String word = nextWord();
         temp.put("statement", "type");
@@ -163,7 +167,7 @@ public class SyntaxParser {
         return temp;
     }
 
-    private HashMap<String, Object> parseType() {
+    private HashMap<String, Object> parseType() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<String, Object>();
         String word = nextWord();
         if (word.equals("$$integer") || word.equals("$$real") || word.equals("$$boolean")) {
@@ -177,13 +181,13 @@ public class SyntaxParser {
         } else {
             if (parseIdentifier(word)) {
                 temp.put("identifier", word.replaceAll("\\$", ""));
-            } // TODO: Maybe error
+            } throw new WrongSyntaxException("Incorrect identifier for type declaration. Got: " + word);
         }
         return temp;
     }
 
 
-    private HashMap<String, Object> parseRecordType() {
+    private HashMap<String, Object> parseRecordType() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = nextWord();
         int N = 0;
@@ -194,6 +198,9 @@ public class SyntaxParser {
             content.add(temp2);
             word = nextWord();
             ++N;
+            if (word.equals("")){
+                throw new WrongSyntaxException("Unable to find exit from record");
+            }
         }
         --index;
         temp.put("content", content);
@@ -201,7 +208,7 @@ public class SyntaxParser {
         return temp;
     }
 
-    private HashMap<String, Object> parseArrayType() {
+    private HashMap<String, Object> parseArrayType() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = nextWord();
 
@@ -235,7 +242,7 @@ public class SyntaxParser {
         } else if (word.equals("$$if")) {
             temp.put("Content", parseIfStatement());
 
-        } // TODO: maybe error?
+        } else throw new WrongSyntaxException("Unexpected token " + word + ". Expect statement declaration, assignment or routine call.");
 
         return temp;
     }
@@ -250,13 +257,20 @@ public class SyntaxParser {
         return temp;
     }
 
-    private HashMap<String, Object> parseRoutineCall(String name) {
+    private HashMap<String, Object> parseRoutineCall(String name) throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("statement", "call");
         temp.put("variable", name);
         String word = nextWord();
         if (word.equals("$$lbr")) {
             ArrayList<HashMap<String, Object>> params = new ArrayList<>();
+            if(index < tokens.size()){
+                if(tokens.get(index).equals("$$rbr")){
+                    temp.put("parameters", params);
+                    ++index;
+                    return temp;
+                }
+            }
             params.add(parseExpression());
             word = nextWord();
             if (word.equals("$$comm")) {
@@ -284,7 +298,7 @@ public class SyntaxParser {
         if (word.equals("$$loop")) {
             temp.put("body", parseBody());
             ++index;
-        } // TODO: maybe error?
+        } else throw new WrongSyntaxException("Unexpected token " + word + ". Expecting 'loop'.");
 
         return temp;
     }
@@ -300,14 +314,17 @@ public class SyntaxParser {
             if (word.equals("$$in")) {
                 word = nextWord();
                 temp.put("reverse", word.equals("$$reverse"));
+                if (!word.equals("$$reverse")){
+                    --index;
+                }
                 temp.put("range", parseRange());
                 word = nextWord();
                 if (word.equals("$$loop")) {
                     temp.put("body", parseBody());
                     ++index;
-                }//TODO: maybe error?
-            }//TODO maybe error?
-        } //TODO: maybe error?
+                } else throw new WrongSyntaxException("Unexpected token " + word + ". Expecting 'loop'.");
+            }  else throw new WrongSyntaxException("Unexpected token " + word + ". Expecting 'in'.");
+        } else throw new WrongSyntaxException("Incorrect name for identifier. Got " + word);
         return temp;
     }
 
@@ -320,7 +337,7 @@ public class SyntaxParser {
         if (word.equals("$$doubdot")) {
             temp.put("expression_to", parseExpression());
         } else {
-            throw new WrongSyntaxException("Expected '..' range sign, got:" + word);
+            throw new WrongSyntaxException("Expected '..' range sign, got: " + word);
         }
         return temp;
     }
@@ -350,7 +367,11 @@ public class SyntaxParser {
     private ArrayList<HashMap<String, Object>> parseParameters() throws WrongSyntaxException {
         ArrayList<HashMap<String, Object>> params = new ArrayList<>();
         String word = nextWord();
-        params.add(parseParameterDeclaration(word));
+        if (!word.equals("$$rbr")) {
+            params.add(parseParameterDeclaration(word));
+        }else {
+            return params;
+        }
         word = nextWord();
         if (word.equals("$$comm")) {
             word = nextWord();
@@ -381,8 +402,10 @@ public class SyntaxParser {
         ArrayList<HashMap<String, Object>> content = new ArrayList<>();
         String word = nextWord();
         while (!word.equals("$$end") && !word.equals("$$else") && !word.equals("")) {
-            --index;
-            content.add(parseStatement());
+            if(!word.equals("$$semicol")){
+                --index;
+                content.add(parseStatement());
+            }
             word = nextWord();
         }
         --index;
@@ -390,7 +413,7 @@ public class SyntaxParser {
     }
 
     //Expression : Relation { ("$$and" | "$$or" | "xor") } Relation
-    private HashMap<String, Object> parseExpression() {
+    private HashMap<String, Object> parseExpression() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseRelation());
         temp.put("is", "expression");
@@ -430,7 +453,7 @@ public class SyntaxParser {
 
 
     //Relation : Simple [ ( "$$less" | "$$lesseq" | "$$great" | "$$greateq" | "$$eq" | "noteq" ) Simple ]
-    private HashMap<String, Object> parseRelation() {
+    private HashMap<String, Object> parseRelation() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseSimple());
         temp.put("is", "relation");
@@ -474,7 +497,7 @@ public class SyntaxParser {
     }
 
     //Simple : Factor { ( "mul" | "div" | "perc" ) Factor }
-    private HashMap<String, Object> parseSimple() {
+    private HashMap<String, Object> parseSimple() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseFactor());
         temp.put("is", "simple");
@@ -513,7 +536,7 @@ public class SyntaxParser {
     }
 
     // Factor : Summand { ( "add" | "sub" ) Summand }
-    private HashMap<String, Object> parseFactor() {
+    private HashMap<String, Object> parseFactor() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("left", parseSummand());
         String word = "";
@@ -552,7 +575,7 @@ public class SyntaxParser {
     }
 
     //Summand : Primary | "lbr" Expression "rbr"
-    private HashMap<String, Object> parseSummand() {
+    private HashMap<String, Object> parseSummand() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = "";
         if (index < tokens.size()) {
@@ -578,7 +601,7 @@ public class SyntaxParser {
         | ModifiablePrimary
         | RoutineCall
      */
-    private HashMap<String, Object> parsePrimary() {
+    private HashMap<String, Object> parsePrimary() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         String word = "";
         if (index < tokens.size()) {
@@ -649,7 +672,7 @@ public class SyntaxParser {
     }
 
     //ModifiablePrimary: Identifier { "$$dot" Identifier | "lsbr" Expression "rsbr" }
-    private HashMap<String, Object> parseModifiablePrimary() {
+    private HashMap<String, Object> parseModifiablePrimary() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("statement", "modifiable");
         String word = nextWord();
@@ -669,7 +692,7 @@ public class SyntaxParser {
                         }
                         if (parseIdentifier(word)) {
                             temp2.put("value", word.replaceAll("\\$", ""));
-                        }//TODO: maybe error?
+                        }else throw new WrongSyntaxException("Incorrect identifier. Got: " + word);
                     } else {
                         temp2.put("type", "expression");
                         temp2.put("value", parseExpression());
