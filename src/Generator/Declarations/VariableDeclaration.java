@@ -15,15 +15,7 @@ public class VariableDeclaration extends SimpleDeclaration {
         this.expression = expression;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public Identifier getIdentifier() {
-        return identifier;
-    }
-
-    public Expression getExpression() {
-        return expression;
+    public String toJavaCode() {
+        return type.toJavaCode() + " " + identifier.toJavaCode() + " = " + expression.toJavaCode() + ";";
     }
 }

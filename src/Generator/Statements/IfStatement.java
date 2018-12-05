@@ -1,28 +1,25 @@
 package Generator.Statements;
 
-import Generator.Declarations.Declaration;
+import Generator.Declarations.Body;
 import Generator.Entities.Expression;
 
-public class IfStatement {
+public class IfStatement extends Statement {
     private Expression ifExpression;
-    private Declaration.Body thenBody;
-    private Declaration.Body elseBody;
+    private Body thenBody;
+    private Body elseBody;
 
-    public IfStatement(Expression expression, Declaration.Body body, Declaration.Body elseBody) {
+    public IfStatement(Expression expression, Body body, Body elseBody) {
         this.ifExpression = expression;
         this.thenBody = body;
         this.elseBody = elseBody;
     }
 
-    public Declaration.Body getElseBody() {
-        return elseBody;
-    }
-
-    public Declaration.Body getThenBody() {
-        return thenBody;
-    }
-
-    public Expression getIfExpression() {
-        return ifExpression;
+    public String toJavaCode() {
+        String controlFlow = "if( " + ifExpression.toJavaCode() + ")";
+        String result = controlFlow + "{ " + thenBody.toJavaCode() + "}";
+        if (elseBody != null) {
+            result += "else{ " + elseBody.toJavaCode() + "}";
+        }
+        return result;
     }
 }

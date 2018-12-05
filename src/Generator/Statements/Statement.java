@@ -1,6 +1,6 @@
 package Generator.Statements;
 
-import Generator.Declarations.Declaration;
+import Generator.Declarations.BodyElement;
 
-public abstract class Statement implements Declaration.BodyElement {
+public abstract class Statement implements BodyElement {
 }

@@ -15,19 +15,17 @@ public class ModifiablePrimary {
         this.mod = mod;
     }
 
-    public Identifier getMain() {
-        return main;
-    }
-
-    public ArrayList<Identifier> getIdentifiers() {
-        return identifiers;
-    }
-
-    public ArrayList<Expression> getExpressions() {
-        return expressions;
-    }
-
-    public ArrayList<String> getMod() {
-        return mod;
+    public String toJavaCode() {
+        StringBuilder result = new StringBuilder(main.toJavaCode());
+        for (String mod : mod
+                ) {
+            if (mod.equals(".")) {
+                result.append(".").append(identifiers.remove(0).toJavaCode());
+            }
+            else if (mod.equals("[]")) {
+                result.append("[").append(expressions.remove(0).toJavaCode()).append("]");
+            }
+        }
+        return result.toString();
     }
 }

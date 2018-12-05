@@ -13,15 +13,24 @@ public class Expression {
         this.relations = relations;
     }
 
-    public Relation getMain() {
-        return main;
-    }
-
-    public ArrayList<String> getOps() {
-        return ops;
-    }
-
-    public ArrayList<Relation> getRelations() {
-        return relations;
+    public String toJavaCode() {
+        StringBuilder result = new StringBuilder(main.toJavaCode());
+        for (String op : ops
+                ) {
+            switch (op) {
+                case "and": {
+                    result.append(" && ").append(relations.remove(0).toJavaCode());
+                }
+                case "or": {
+                    result.append(" || ").append(relations.remove(0).toJavaCode());
+                }
+                case "xor": {
+                    result.append(" ^ ").append(relations.remove(0).toJavaCode());
+                }
+                default:
+                    break;
+            }
+        }
+        return result.toString();
     }
 }

@@ -1,35 +1,31 @@
 package Generator.Statements;
 
-import Generator.Declarations.Declaration;
+import Generator.Declarations.Body;
 import Generator.Entities.Identifier;
 import Generator.Declarations.Range;
 
-public class ForLoop {
+public class ForLoop extends Statement {
     private Identifier runner;
     private boolean reverse;
     private Range range;
-    private Declaration.Body body;
+    private Body body;
 
-    public ForLoop(Identifier runner, boolean reverse, Range range, Declaration.Body body) {
+    public ForLoop(Identifier runner, boolean reverse, Range range, Body body) {
         this.runner = runner;
         this.reverse = reverse;
         this.range = range;
         this.body = body;
     }
 
-    public Declaration.Body getBody() {
-        return body;
-    }
-
-    public Range getRange() {
-        return range;
-    }
-
-    public boolean isReverse() {
-        return reverse;
-    }
-
-    public Identifier getRunner() {
-        return runner;
+    public String toJavaCode() {
+        String controlFlow;
+        if (reverse)
+            controlFlow = "for (" + runner.toJavaCode() + "=" + range.getFrom().toJavaCode() + ";" +
+                    runner.toJavaCode() + ">" + range.getTo().toJavaCode() + ";" + runner.toJavaCode() + "--" + ")";
+        else controlFlow = "for (" + runner.toJavaCode() + "=" + range.getFrom().toJavaCode() + ";" +
+                runner.toJavaCode() + "<" + range.getTo().toJavaCode() + ";" + runner.toJavaCode() + "++" + ")";
+        return controlFlow + "{" + body.toJavaCode() + "}";
     }
 }
+
+

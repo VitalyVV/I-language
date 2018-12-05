@@ -11,11 +11,11 @@ public class Range {
         this.to = to;
     }
 
-    public Expression getTo() {
-        return to;
-    }
-
     public Expression getFrom() {
         return from;
+    }
+
+    public Expression getTo() {
+        return to;
     }
 }
