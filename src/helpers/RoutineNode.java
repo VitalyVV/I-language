@@ -35,6 +35,7 @@ public class RoutineNode extends Node {
         this.routine = routine;
     }
 
+    //we need symbols from parent scope as they are visible to the child if declared
     public void setSymbols(LinkedHashMap<String, Symbol> symbols){
         this.symbolsDeclarations = (LinkedHashMap<String, Symbol>) symbols.clone();
     }
