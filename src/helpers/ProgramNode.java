@@ -26,9 +26,6 @@ public class ProgramNode extends Node {
     private LinkedList<RoutineNode> routines = new LinkedList<>();
     private LinkedList<String> namesRoutines = new LinkedList<>();
 
-    //type declarations
-    HashMap<String,String> typeMappings = new HashMap<>();
-
     private int currentChild = 0;
 
 
