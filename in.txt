@@ -1,17 +1,8 @@
-routine kek(i:integer): integer is
-    var a : integer
-    a := i
-
-end
-
-type vasa is integer
-type vasa is real
-
 var rec: record
     var j: array [12] boolean
 end
 
 routine bar (k: real) is
-    rec.j[k % body * 10] := 6 <= 8
+    rec.j[5 % 5 * 10] := 6 <= 8
     bar(j,o)
 end

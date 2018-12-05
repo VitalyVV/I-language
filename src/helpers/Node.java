@@ -62,8 +62,8 @@ public abstract class Node {
 
     //gets the result of operation between two types: if it happens that the types are incompatible, throws exception
     protected String getTypesResult(String a, String b, String op) throws Exception{
-        if (a.equals("integer") && b.equals("integer") && !op.equals("factor")) return "integer";
-        else if (a.equals("integer") && b.equals("integer") && op.equals("factor")) return "real";
+        if (a.equals("integer") && b.equals("integer") && op.equals("div") ) return "real";
+        else if (a.equals("integer") && b.equals("integer")) return "integer";
         else if ((a.equals("integer") && b.equals("boolean")) || (a.equals("boolean") && b.equals("integer"))) return "integer";
         else if (a.equals("real") && b.equals("real")) return "real";
         else if (a.equals("boolean") && b.equals("boolean")) return "boolean";
@@ -427,7 +427,7 @@ public abstract class Node {
             if (((String)hashmaped.get("hasright")).equals("true")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
                 if (checkOperable(result, resultRight)){
-                    return getTypesResult(result, resultRight, getOpType((String)hashmaped.get("op")));
+                    return getTypesResult(result, resultRight, (String)hashmaped.get("op"));
                 }
             } else return result;
             //Summand and expression have only left operands
