@@ -239,8 +239,15 @@ public class SyntaxParser {
             temp.put("Content", parseForLoop());
         } else if (word.equals("$$if")) {
             temp.put("Content", parseIfStatement());
-
-        } else throw new WrongSyntaxException("Unexpected token " + word + ". Expect statement declaration, assignment or routine call.");
+        }else if(word.equals("$$var") || word.equals("$$type")){
+            --index;
+            temp.put("Content", parseSimpleDeclaration());
+        }else
+            throw new WrongSyntaxException(
+                    "Unexpected token " +
+                            word +
+                            ". Expect statement declaration, assignment, variable/type declaration or routine call."
+            );
 
         return temp;
     }
