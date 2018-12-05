@@ -356,6 +356,45 @@ public abstract class Node {
         } else throw new SyntaxException("Not a record: "+ unit.get("name"));
     }
 
+    protected String getModifiableType(HashMap<String, Object> modifvar) throws Exception {
+        String modifName = (String) modifvar.get("value");
+        if (((ArrayList<HashMap<String, Object>>)modifvar.get("mods")).isEmpty()) {
+            if (symbolsDeclarations.keySet().contains(modifName)){
+                return symbolsDeclarations.get(modifName).getType();
+            }
+            else if (namesRoutines.contains(modifName)){
+                int ind = namesRoutines.indexOf(modifName);
+                return routines.get(ind).getResultType();
+            }
+            else throw new Exception("No such identifier declared: "+modifName);
+        }
+        else {
+            //Get member access list
+            ArrayList<HashMap<String, Object>> mods = (ArrayList<HashMap<String, Object>>) modifvar.get("mods");
+            String type = "";
+            ArrayList<HashMap<String, Object>> members = null;
+            HashMap<String,Object> array = null;
+            //Check if modifiable exists
+            if (symbolsDeclarations.containsKey(modifName))
+            {
+                if (mods.get(0).get("type").equals("dot"))
+                {
+                    //Get modifiable members
+                    members = getMembers((HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit());
+                    //Check if access is possible and get type of the member
+                    type = getRecordType(members, mods);
+                } else if (mods.get(0).get("type").equals("expression"))
+                {
+                    array = (HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit();
+                    //Check if access is possible and get type of the member
+                    type = getArrayType((HashMap<String, Object>) array.get("type"), mods);
+                }
+                return type;
+            }
+            else throw new SyntaxException("Undeclared record: " + modifName);
+        }
+    }
+
     //just go down the tree and get the type of expression
     protected String calculateExpressionResult(Object o) throws Exception{
 
@@ -367,42 +406,7 @@ public abstract class Node {
                 return typePrimary;
             }
             else if (typePrimary.equals("modifiable")){
-                HashMap<String, Object> modifvar = (HashMap<String, Object>) hashmaped.get("value");
-                String modifName = (String) modifvar.get("value");
-                if (((ArrayList<HashMap<String, Object>>)modifvar.get("mods")).isEmpty()) {
-                    if (symbolsDeclarations.keySet().contains(modifName)){
-                        return symbolsDeclarations.get(modifName).getType();
-                    }
-                    else if (namesRoutines.contains(modifName)){
-                        int ind = namesRoutines.indexOf(modifName);
-                        return routines.get(ind).getResultType();
-                    }
-                    else throw new Exception("No such identifier declared: "+modifName);
-                }
-                else {
-                    //Get member access list
-                    ArrayList<HashMap<String, Object>> mods = (ArrayList<HashMap<String, Object>>) modifvar.get("mods");
-                    String type = "";
-                    ArrayList<HashMap<String, Object>> members = null;
-                    HashMap<String,Object> array = null;
-                    //Check if modifiable exists
-                    if (symbolsDeclarations.containsKey(modifName))
-                    {
-                        if (mods.get(0).get("type").equals("dot"))
-                        {
-                            //Get modifiable members
-                            members = getMembers((HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit());
-                            //Check if access is possible and get type of the member
-                            type = getRecordType(members, mods);
-                        } else if (mods.get(0).get("type").equals("expression"))
-                            array = (HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit();
-                            //Check if access is possible and get type of the member
-                            type = getArrayType((HashMap<String, Object>) array.get("type"), mods);
-                        return type;
-                    }
-                    else throw new SyntaxException("Undeclared record: " + modifName);
-
-                }
+                return getModifiableType((HashMap<String, Object>) hashmaped.get("value"));
             }
             else if (typePrimary.equals("routinecall")){
                 HashMap<String, Object> hashmapedRotineCall = (HashMap<String, Object>) hashmaped.get("type");

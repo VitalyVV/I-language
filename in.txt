@@ -1,17 +1,14 @@
-var defIne9918 : integer is 9
-var x : integer
-type best is integer
-var defIne : best
+routine kek(i:integer): integer is
+    var a : integer
+    a := i
 
-var y : real is -10.10
-var arr : array[x] record
-        var rec : record
-                     var n : real
-                     var k : integer
-                     var p : boolean
-                     var j : array[10] real
-                 end
 end
 
-var bee: integer is arr[1]
+var rec: record
+    var j: array [12] boolean
+end
 
+routine bar (k: real) is
+    rec.j[k % body * 10] := 6 <= 8
+    bar(j,o)
+end

@@ -147,7 +147,7 @@ public class RoutineNode extends Node {
                 else if (((String)cont.get("statement")).equals("assignment")){
 
                     String toAssign = calculateExpressionResult(cont.get("value"));
-                    String assignable;
+                    String modType;
                     HashMap<String, Object> modiPrim = (HashMap<String, Object>) cont.get("name");
                     String modPrimName = (String)modiPrim.get("value");
 
@@ -155,7 +155,7 @@ public class RoutineNode extends Node {
                     if (!(symbolsDeclarations.keySet().contains(modPrimName) || innerSymbolsDeclarations.keySet().contains(modPrimName))) {
                         throw new Exception("No such identifier previously declared: "+modPrimName);
                     }
-                    assignable = getModifiableType(modiPrim);
+                    modType = getModifiableType(modiPrim); //==assignable
 
                     //check for assignment result according to obtained types, if no match - exception is thrown
                     if (assignable == null){
@@ -241,39 +241,6 @@ public class RoutineNode extends Node {
                     }
                 }
             }
-        }
-
-    }
-
-
-    private String getModifiableType(Object o) throws Exception{
-
-        HashMap<String, Object> modiPrim = (HashMap<String, Object>) o;
-        String modPrimName = (String)modiPrim.get("value");
-        ArrayList<HashMap<String, Object>> modifvar = (ArrayList<HashMap<String, Object>>) modiPrim.get("mods");
-        if (modifvar.isEmpty()) {
-            return null;
-        }
-        else {
-            //Get member access list
-            String type = "";
-            ArrayList<HashMap<String, Object>> members = null;
-            //Check if modifiable exists
-            if (symbolsDeclarations.containsKey(modPrimName))
-            {
-                if (modifvar.get(0).get("type").equals("dot"))
-                {
-                    //Get modifiable members
-                    members = getMembers((HashMap<String, Object>) symbolsDeclarations.get(modPrimName).getUnit());
-                    //Check if access is possible and get type of the member
-                    type = getRecordType(members, modifvar);
-                } else if (modifvar.get(0).get("type").equals("expression"))
-                    //Check if access is possible and get type of the member
-                    type = getArrayType(modiPrim, modifvar);
-                return type;
-            }
-            else throw new SyntaxException("Undeclared record: " + modPrimName);
-
         }
 
     }
