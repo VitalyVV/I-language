@@ -21,11 +21,13 @@ public class ProgramNode extends Node {
 //    //list of variable symbols only
 //    private LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
 
+    HashMap<String,String> typeMappings = new HashMap<>();
 
     //list of routines only
     private LinkedList<RoutineNode> routines = new LinkedList<>();
     private LinkedList<String> namesRoutines = new LinkedList<>();
 
+    
     private int currentChild = 0;
 
 
