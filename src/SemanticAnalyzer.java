@@ -12,6 +12,7 @@ public class SemanticAnalyzer{
     private class SymbolTable {
 
         private LinkedHashMap<String, Symbol> symbols = new LinkedHashMap<>();
+        private HashMap<String, String> types = new HashMap<>();
         private String name;
         private int level;
         private SymbolTable enclosingScope = null;
@@ -35,6 +36,10 @@ public class SemanticAnalyzer{
 
         void insert(LinkedHashMap<String, Symbol> symbols){
             this.symbols = symbols;
+        }
+
+        void insertTypes(HashMap<String, String> types){
+            this.types = types;
         }
 
         //get a Symbol by its name

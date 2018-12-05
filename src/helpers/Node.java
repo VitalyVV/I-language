@@ -11,12 +11,13 @@ import java.util.*;
 public abstract class Node {
 
     private String name;
-    private int currentChild = 0;
+    protected int currentChild = 0;
 
     protected ArrayList<HashMap<String, Object>> children;
 
     //list of variable symbols only
     protected LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
+
     //type declarations
     protected HashMap<String,String> typeMappings = new HashMap<>();
 
@@ -117,6 +118,9 @@ public abstract class Node {
         }
         else if (a.containsKey("record")){
             return "record";
+        }
+        else if (a.containsKey("type")){
+            return getType(a.get("type"));
         }
         else {
             Map.Entry<String,Object> entry = a.entrySet().iterator().next();
