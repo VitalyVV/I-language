@@ -19,6 +19,7 @@ public class Main {
         }
         lx.parseString(s);
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
+
         SemanticAnalyzer ss = new SemanticAnalyzer();
         ss.analyze(sp.getRoot());
 
