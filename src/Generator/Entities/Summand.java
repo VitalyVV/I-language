@@ -12,11 +12,10 @@ public class Summand {
         this.mainExpression = mainExpression;
     }
 
-    public Expression getMainExpression() {
-        return mainExpression;
-    }
-
-    public Primary getMainPrimary() {
-        return mainPrimary;
+    public String toJavaCode() {
+        StringBuilder result = new StringBuilder();
+        if (mainExpression != null)
+            return result.append("(").append(mainExpression.toJavaCode()).append(")").toString();
+        return result.append(mainPrimary.toJavaCode()).toString();
     }
 }

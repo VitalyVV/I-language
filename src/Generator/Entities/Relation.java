@@ -13,15 +13,14 @@ public class Relation {
         this.terms = terms;
     }
 
-    public Simple getMain() {
-        return main;
-    }
-
-    public ArrayList<String> getOps() {
-        return ops;
-    }
-
-    public ArrayList<Simple> getTerms() {
-        return terms;
+    public String toJavaCode() {
+        StringBuilder result = new StringBuilder(main.toJavaCode());
+        for (String op : ops
+                ) {
+            if (op.equals("=")) op = "==";
+            if (op.equals("/=")) op = "!=";
+            result.append(op).append(terms.remove(0).toJavaCode());
+        }
+        return result.toString();
     }
 }

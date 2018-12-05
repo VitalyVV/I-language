@@ -10,7 +10,7 @@ public class Sign {
         this.sign = sign;
     }
 
-    public String getSign() {
+    public String toJavaCode() {
         return sign;
     }
 }

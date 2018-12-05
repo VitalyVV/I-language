@@ -1,40 +1,17 @@
-var defIne9918 : integer is 9
-var x : integer
-type best is integer
-var defIne : best
-var y : real is -10.10
-var arr : array[x] real
-        var rec : record
-                     var n : real
-                     var k : integer
-                     var p : boolean
-                     var j : array[10] real
-                 end
+routine kek(i:integer): integer is
+    var a : integer
+    a := i
 
+end
 
-routine foo (i: integer, j : boolean, kol: real) : integer is
-    result := i + j
-    y[10-8 and 3].best := 10.9
+type vasa is integer
+type vasa is real
 
-    if x >= 10 then
-        x := x - 10
-    else
-        if x < 5 then
-            y := x = 0
-        end
-
-        while n<10 loop
-            for jon in reverse 10..50 loop
-                rec.k := jon
-            end
-        end
-    end
+var rec: record
+    var j: array [12] boolean
 end
 
 routine bar (k: real) is
     rec.j[k % body * 10] := 6 <= 8
     bar(j,o)
 end
-
-
-

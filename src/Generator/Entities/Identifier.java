@@ -1,13 +1,15 @@
 package Generator.Entities;
 
-public class Identifier {
+import Generator.Types.Type;
+
+public class Identifier implements Type{
     private String name;
 
     public Identifier(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    public String toJavaCode() {
         return name;
     }
 }

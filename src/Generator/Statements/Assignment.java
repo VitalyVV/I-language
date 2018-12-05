@@ -12,11 +12,7 @@ public class Assignment extends Statement {
         this.expression = expression;
     }
 
-    public Expression getExpression() {
-        return expression;
-    }
-
-    public ModifiablePrimary getModifiablePrimary() {
-        return modifiablePrimary;
+    public String toJavaCode() {
+        return modifiablePrimary.toJavaCode() + "=" + expression.toJavaCode() + ";";
     }
 }

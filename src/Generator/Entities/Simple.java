@@ -13,15 +13,12 @@ public class Simple {
         this.factors = factors;
     }
 
-    public ArrayList<String> getOps() {
-        return ops;
-    }
-
-    public Factor getMain() {
-        return main;
-    }
-
-    public ArrayList<Factor> getFactors() {
-        return factors;
+    public String toJavaCode(){
+        StringBuilder result = new StringBuilder(main.toJavaCode());
+        for (String op: ops
+             ) {
+            result.append(op).append(factors.remove(0).toJavaCode());
+        }
+        return result.toString();
     }
 }

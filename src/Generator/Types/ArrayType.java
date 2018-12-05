@@ -2,7 +2,7 @@ package Generator.Types;
 
 import Generator.Entities.Expression;
 
-public class ArrayType extends UserType{
+public class ArrayType extends UserType {
     private Expression expression;
     private Type type;
 
@@ -11,11 +11,13 @@ public class ArrayType extends UserType{
         this.type = type;
     }
 
-    public Expression getExpression() {
-        return expression;
+    @Override
+    public String getId() {
+        return type.getId();
     }
 
-    public Type getType() {
-        return type;
+    public String toJavaCode() {
+        if (type.getClass().getName().equals("RecordType")) return type.getId() + "[" + expression.toJavaCode() + "]";
+        return type.toJavaCode() + "[" + expression.toJavaCode() + "]";
     }
 }

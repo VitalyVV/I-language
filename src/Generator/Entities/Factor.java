@@ -13,15 +13,12 @@ public class Factor {
         this.summands = summands;
     }
 
-    public Summand getMain() {
-        return main;
-    }
-
-    public ArrayList<String> getOps() {
-        return ops;
-    }
-
-    public ArrayList<Summand> getSummands() {
-        return summands;
+    public String toJavaCode() {
+        StringBuilder result = new StringBuilder(main.toJavaCode());
+        for (String op: ops
+             ) {
+            result.append(op).append(summands.remove(0).toJavaCode());
+        }
+        return result.toString();
     }
 }
