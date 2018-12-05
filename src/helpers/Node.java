@@ -34,6 +34,15 @@ public abstract class Node {
         return name;
     }
 
+    public Map.Entry<String, Symbol> getChild(){
+
+        if (currentChild>=symbolsDeclarations.size()) return null;
+        Map.Entry<String,Symbol> entry = entries.next();
+        currentChild++;
+        //update the pointer for routine we have not visited before
+        return entry;
+    }
+
 
     public abstract String getMethod();
 
@@ -53,6 +62,7 @@ public abstract class Node {
     protected String getTypesResult(String a, String b, String op) throws Exception{
         if (a.equals("integer") && b.equals("integer") && !op.equals("factor")) return "integer";
         else if (a.equals("integer") && b.equals("integer") && op.equals("factor")) return "real";
+        else if ((a.equals("integer") && b.equals("boolean")) || (a.equals("boolean") && b.equals("integer"))) return "integer";
         else if (a.equals("real") && b.equals("real")) return "real";
         else if (a.equals("boolean") && b.equals("boolean")) return "boolean";
         else if ((a.equals("real") && b.equals("integer")) || (a.equals("integer") && b.equals("real"))) return "real";
@@ -382,15 +392,5 @@ public abstract class Node {
         else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
         return null;
     }
-
-    public Map.Entry<String, Symbol> getChild(){
-
-        if (currentChild>=symbolsDeclarations.size()) return null;
-        Map.Entry<String,Symbol> entry = entries.next();
-        currentChild++;
-        //update the pointer for routine we have not visited before
-        return entry;
-    }
-
 }
 

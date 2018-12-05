@@ -14,7 +14,6 @@ var arr : array[x] real
 
 
 routine foo (i: integer, j : boolean, kol: real) : integer is
-    result := i + j
     y[10-8 and 3].best := 10.9
 
     if x >= 10 then

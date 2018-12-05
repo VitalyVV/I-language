@@ -1,11 +1,5 @@
 package helpers;
-
-import Syntax.WrongSyntaxException;
 import com.sun.corba.se.impl.io.TypeMismatchException;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
-import org.omg.IOP.CodecPackage.TypeMismatch;
-
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 
 //I think that functions for processing
@@ -29,17 +23,6 @@ public class ProgramNode extends Node {
     public LinkedHashMap<String, Symbol> getSymbols(){
         return symbolsDeclarations;
     }
-
-    /*
-
-    public RoutineNode getChild(){
-
-        if (currentChild>routines.size()-1) return null;
-        RoutineNode rnode =  routines.get(currentChild);
-        currentChild++; //update the pointer for routine we have not visited before
-        return rnode;
-    }
-*/
 
     //Start method to go down the tree and get the types of objects
     public void createSymbols() throws Exception{
@@ -88,21 +71,8 @@ public class ProgramNode extends Node {
             } else throw new Exception("Invalid syntax. Routine or declaration expected");
         }
 
-
-
-//        int a = 5;
-//        int b = 6;
-//        Symbol s1 = new Symbol(a, "a");
-//        Symbol s2 = new Symbol(b, "b");
-//
-//        List<Symbol> s = new LinkedList<Symbol>();
-//        s.add(s1);
-//        s.add(s2);
-//        return s;
         entries = symbolsDeclarations.entrySet().iterator();
 
     }
-
-
 
 }
