@@ -13,6 +13,8 @@ public abstract class Node {
     private String name;
     private int currentChild = 0;
 
+    protected ArrayList<HashMap<String, Object>> children;
+
     //list of variable symbols only
     protected LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
     //type declarations

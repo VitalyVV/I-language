@@ -16,22 +16,6 @@ public class ProgramNode extends Node {
         super(name);
     }
 
-    private ArrayList<HashMap<String, Object>> children;
-
-//    //list of variable symbols only
-//    private LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
-
-
-    //list of routines only
-    private LinkedList<RoutineNode> routines = new LinkedList<>();
-    private LinkedList<String> namesRoutines = new LinkedList<>();
-
-    //type declarations
-    HashMap<String,String> typeMappings = new HashMap<>();
-
-    private int currentChild = 0;
-
-
     public String getMethod(){
         return "Root";
     }

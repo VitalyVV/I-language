@@ -2,6 +2,7 @@ var defIne9918 : integer is 9
 var x : integer
 type best is integer
 var defIne : best
+
 var y : real is -10.10
 var arr : array[x] real
         var rec : record
