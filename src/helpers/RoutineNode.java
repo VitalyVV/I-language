@@ -158,28 +158,7 @@ public class RoutineNode extends Node {
                     modType = getModifiableType(modiPrim); //==assignable
 
                     //check for assignment result according to obtained types, if no match - exception is thrown
-                    if (assignable == null){
-                         if (innerSymbolsDeclarations.keySet().contains(modPrimName)){
-                            assignable = getType(innerSymbolsDeclarations.get(modPrimName).getUnit());
-                         Symbol s = innerSymbolsDeclarations.get(modPrimName);
-                         s.setType(getAssignmentresult(assignable,toAssign ));}
-                         else {
-                             assignable = getType(symbolsDeclarations.get(modPrimName).getUnit());
-                             Symbol s = symbolsDeclarations.get(modPrimName);
-                             s.setType(getAssignmentresult(assignable,toAssign ));
 
-                         }
-                    }
-                    else {
-                        if (innerSymbolsDeclarations.keySet().contains(modPrimName)){
-                            Symbol s = innerSymbolsDeclarations.get(modPrimName);
-                            s.setType(getAssignmentresult(assignable,toAssign ));}
-                        else {
-                            Symbol s = symbolsDeclarations.get(modPrimName);
-                            s.setType(getAssignmentresult(assignable,toAssign ));
-
-                        }
-                    }
 
                 }
 

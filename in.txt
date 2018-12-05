@@ -4,6 +4,9 @@ routine kek(i:integer): integer is
 
 end
 
+type vasa is integer
+type vasa is real
+
 var rec: record
     var j: array [12] boolean
 end
