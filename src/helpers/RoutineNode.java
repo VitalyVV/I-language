@@ -1,5 +1,6 @@
 package helpers;
 
+import Syntax.WrongSyntaxException;
 import com.sun.corba.se.impl.io.TypeMismatchException;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
@@ -158,11 +159,10 @@ public class RoutineNode extends Node {
                         throw new Exception("No such identifier previously declared: "+modPrimName);
                     }
                     modType = getModifiableType(modiPrim); //==assignable
+                    if (modType.equals("boolean") &&  toAssign.equals("integer") && !isIntBooleanable(cont)) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
                     getAssignmentresult(modType, toAssign);
 
                     //check for assignment result according to obtained types, if no match - exception is thrown
-
-
                 }
 
                 //create new sub-scope if

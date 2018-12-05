@@ -1,4 +1,5 @@
 package helpers;
+import Syntax.WrongSyntaxException;
 import com.sun.corba.se.impl.io.TypeMismatchException;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
@@ -44,8 +45,9 @@ public class ProgramNode extends Node {
                     } else if (rootUnit.containsKey("value")) { //Vars that have type may have "is" expressions too
                         //Inference expression type
                         String expressionResult = calculateExpressionResult(rootUnit.get("value"));
+                        if (varType.equals("boolean") &&  expressionResult.equals("integer") && !isIntBooleanable(rootUnit)) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
                         //If expression type is the same as declared type
-                        if (expressionResult.equals(varType))
+                        if (expressionResult.equals(varType) || (varType.equals("boolean") &&  expressionResult.equals("integer")))
                         {
                             s = new Symbol(varType, (String) rootUnit.get("name"), rootUnit);
                         } else throw new TypeMismatchException("\nWrong expression result type for: " + rootUnit.get("name") +

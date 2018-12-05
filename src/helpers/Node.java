@@ -85,6 +85,7 @@ public abstract class Node {
     protected String getTypesResult(String a, String b, String op) throws Exception{
         if (a.equals("integer") && b.equals("integer") && op.equals("div") ) return "real";
         else if (a.equals("integer") && b.equals("integer")) return "integer";
+        else if (a.equals("boolean") && b.equals("integer")) return "boolean";
         else if ((a.equals("integer") && b.equals("boolean")) || (a.equals("boolean") && b.equals("integer"))) return "integer";
         else if (a.equals("real") && b.equals("real")) return "real";
         else if (a.equals("boolean") && b.equals("boolean")) return "boolean";
@@ -109,6 +110,9 @@ public abstract class Node {
             return true;
         }
         else if (modPrim.equals("boolean") && toAssign.equals("boolean")){
+            return true;
+        }
+        else if (modPrim.equals("boolean") && toAssign.equals("integer")){
             return true;
         }
         else if (modPrim.equals(toAssign)){
@@ -150,6 +154,20 @@ public abstract class Node {
         }
     }
 
+    protected boolean isIntBooleanable(HashMap<String,Object> value)
+    {
+        HashMap<String,Object> val = (HashMap<String, Object>) value.get("value");
+        while(true)
+        {
+            if (val.containsKey("type") && val.get("type").equals("integer")) break;
+            if (val.containsKey("hasright") && val.get("hasright").equals("true")) return false;
+            if (val.containsKey("type") && val.get("type").equals("modifiable")) return false;
+            val = (HashMap<String, Object>) val.get("left");
+        }
+        if (val.containsKey("sign") && val.get("sign").equals("-") && val.get("value").equals("1")) return false;
+        if (!(val.get("value").equals("1") || val.get("value").equals("0"))) return false;
+        return true;
+    }
 
     public String getOpType(String op) throws OperationNotSupportedException {
         List<String> factors = Arrays.asList("div","mul","perc");
