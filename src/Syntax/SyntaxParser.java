@@ -440,6 +440,8 @@ public class SyntaxParser {
             while (word.equals("$$and") || word.equals("$$or") || word.equals("$$xor")) {
                 hadMore = true;
                 ++index;
+                out.put("is", "expression");
+                out.put("hasright", "true");
                 out.put("left", parseRelation());
                 out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
@@ -480,6 +482,8 @@ public class SyntaxParser {
             while (isRelationSign(word)) {
                 hadMore = true;
                 ++index;
+                out.put("is", "relation");
+                out.put("hasright", "true");
                 out.put("left", parseSimple());
                 out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
@@ -524,6 +528,8 @@ public class SyntaxParser {
             while (word.equals("$$mul") || word.equals("$$div") || word.equals("$$perc")) {
                 hadMore = true;
                 ++index;
+                out.put("is", "simple");
+                out.put("hasright", "true");
                 out.put("left", parseFactor());
                 out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
@@ -563,6 +569,8 @@ public class SyntaxParser {
             while (word.equals("$$add") || word.equals("$$sub")) {
                 hadMore = true;
                 ++index;
+                out.put("is", "factor");
+                out.put("hasright", "true");
                 out.put("left", parseSummand());
                 out.put("right", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
