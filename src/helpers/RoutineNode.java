@@ -42,7 +42,8 @@ public class RoutineNode extends Node {
 
     public void setTypes(HashMap<String, String> types){
 
-        this.typeMappings =(HashMap<String, String>) types.clone();
+        if (types!=null)
+        this.typeMappings = (HashMap<String, String>) types.clone();
     }
 
 
@@ -131,7 +132,7 @@ public class RoutineNode extends Node {
                             ArrayList <Symbol> existedSymbols = rnode.getParameters();
                             int parCounter = 0;
                             for (HashMap<String, Object> el:params){
-                                   String type = getType(el);
+                                   String type = calculateExpressionResult(el);
                                    String actType = existedSymbols.get(parCounter).getType();
                                    if (!type.equals(actType))
                                        throw new TypeMismatchException("Parameters types passed to routine does not match." +
@@ -157,6 +158,7 @@ public class RoutineNode extends Node {
                         throw new Exception("No such identifier previously declared: "+modPrimName);
                     }
                     modType = getModifiableType(modiPrim); //==assignable
+                    getAssignmentresult(modType, toAssign);
 
                     //check for assignment result according to obtained types, if no match - exception is thrown
 
