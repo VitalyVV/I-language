@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public class Relation {
     private Simple main;
-    private String op;
+    private ArrayList<String> ops;
     private ArrayList<Simple> terms;
 
-    public Relation(Simple main, String op, ArrayList<Simple> terms) {
+    public Relation(Simple main, ArrayList<String> ops, ArrayList<Simple> terms) {
         this.main = main;
-        this.op = op;
+        this.ops = ops;
         this.terms = terms;
     }
 
@@ -17,8 +17,8 @@ public class Relation {
         return main;
     }
 
-    public String getOp() {
-        return op;
+    public ArrayList<String> getOps() {
+        return ops;
     }
 
     public ArrayList<Simple> getTerms() {

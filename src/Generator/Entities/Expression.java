@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public class Expression {
     private Relation main;
-    private String op;
+    private ArrayList<String> ops;
     private ArrayList<Relation> relations;
 
-    public Expression(Relation main, String op, ArrayList<Relation> relations) {
+    public Expression(Relation main, ArrayList<String> ops, ArrayList<Relation> relations) {
         this.main = main;
-        this.op = op;
+        this.ops = ops;
         this.relations = relations;
     }
 
@@ -17,8 +17,8 @@ public class Expression {
         return main;
     }
 
-    public String getOp() {
-        return op;
+    public ArrayList<String> getOps() {
+        return ops;
     }
 
     public ArrayList<Relation> getRelations() {
