@@ -73,13 +73,19 @@ public class SemanticAnalyzer{
             Map.Entry<String, Symbol> entry = node.getChild();
             if (entry == null) break;
 
+
+
             Symbol s = entry.getValue();
+
+            globalScope.insert(s);
             if (s.getType().equals("routine")){
-                RoutineNode rnode = new RoutineNode(entry.getKey(), ((RoutineNode)s.getUnit()).getRoutine());
+                RoutineNode rnode = (RoutineNode) entry.getValue().getUnit();
+                //RoutineNode rnode = new RoutineNode(entry.getKey(), ((RoutineNode)s.getUnit()).getRoutine());
+                rnode.setSymbols(currentScope.symbols);
+                rnode.createTable();
                 visitRoutine(rnode);
             }
 
-            globalScope.insert(s);
             globalScope.printTable();
         }
 
@@ -110,14 +116,15 @@ public class SemanticAnalyzer{
         SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
         currentScope = procScope;
         System.out.println(procScope.name + " " + procScope.level);
-        node.setSymbols(currentScope.enclosingScope.symbols);
-        node.createTable();
+//        node.setSymbols(currentScope.enclosingScope.symbols);
+//        node.createTable();
 
         while (true) {
             Map.Entry<String, Symbol> entry = node.getChild();
             if (entry == null) break;
 
             Symbol s = entry.getValue();
+            procScope.insert(s);
             if (s.getType().equals("if")) {
                 IfNode rnode = new IfNode(entry.getKey(), (HashMap<String, Object>) s.getUnit());
                 visitIf(rnode);
@@ -131,7 +138,7 @@ public class SemanticAnalyzer{
                 visitForLoop(rnode);
             }
 
-            procScope.insert(s);
+
            procScope.printTable();
 
 

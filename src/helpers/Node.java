@@ -71,27 +71,27 @@ public abstract class Node {
         else throw new Exception("Incompatible types: "+a+", "+b+ " with operand "+op);
     }
 
-    protected String getAssignmentresult(String modPrim, String toAssign) throws Exception{
+    protected boolean getAssignmentresult(String modPrim, String toAssign) throws Exception{
         if (modPrim.equals("integer") && toAssign.equals("integer")){
-            return "integer";
+            return true;
         }
         else if (modPrim.equals("integer") && toAssign.equals("real")){
-            return "integer";
+            return true;
         }
         else if (modPrim.equals("integer") && toAssign.equals("boolean")){
-            return "integer";
+            return true;
         }
         else if (modPrim.equals("real") && toAssign.equals("real")){
-            return "real";
+            return true;
         }
         else if (modPrim.equals("real") && toAssign.equals("boolean")){
-            return "real";
+            return true;
         }
         else if (modPrim.equals("boolean") && toAssign.equals("boolean")){
-            return "boolean";
+            return true;
         }
         else if (modPrim.equals(toAssign)){
-            return modPrim;
+            return true;
         }
         else throw new Exception("Incompatible types: "+modPrim+", "+toAssign+ " for assignment");
     }
