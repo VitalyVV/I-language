@@ -2,6 +2,7 @@ package helpers;
 
 import Syntax.WrongSyntaxException;
 import com.sun.corba.se.impl.io.TypeMismatchException;
+import jdk.nashorn.internal.runtime.regexp.joni.Syntax;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import org.omg.IOP.CodecPackage.TypeMismatch;
 
@@ -142,8 +143,42 @@ public abstract class Node {
         else throw new OperationNotSupportedException("Invalid operand: "+ op);
     }
 
-    //Type inference exclusive for array of arrays
     protected String getArrayType(HashMap<String,Object> array, ArrayList<HashMap<String,Object>> accessMembers) throws Exception {
+        if (accessMembers.size()==1) {
+            HashMap<String, Object> index = accessMembers.get(0);
+            String expressionResult = calculateExpressionResult(index.get("value"));
+            if (expressionResult.equals("integer")) {
+                HashMap<String,Object> temp = (HashMap<String, Object>) array.get("array");
+                HashMap<String,Object> result  = (HashMap<String, Object>) temp.get("type");
+                if (result.containsKey("record")) return "record";
+                else if (result.containsKey("primitive")) return (String) result.get("primitive");
+                else if (result.containsKey("array")) return "array";
+                else throw new SyntaxException("Invalid member access syntax");
+
+            } else throw new TypeMismatch("Array element access expression is not integer");
+        }
+
+
+        if (accessMembers.get(0).get("type").equals("expression") && !accessMembers.get(1).get("type").equals("expression"))
+        {
+            HashMap<String, Object> index = accessMembers.get(0);
+            String expressionResult = calculateExpressionResult(index.get("value"));
+            if (expressionResult.equals("integer")) {
+                HashMap<String,Object> temp = (HashMap<String, Object>) array.get("array");
+                HashMap<String,Object> result  = (HashMap<String, Object>) temp.get("type");
+                if (result.containsKey("record"))
+                {
+                    if (accessMembers.size()==1) return "record";
+                    ArrayList<HashMap<String,Object>> subMembers = new ArrayList<>(accessMembers.subList(1, accessMembers.size()));
+                    return getRecordType(getMembers(temp), subMembers);
+                }
+                else if (result.containsKey("primitive")) throw new SyntaxException("Primitive has of type " + ((String) result.get("primitive")) + " has no members.");
+                else if (result.containsKey("array")) throw new SyntaxException("Invalid array access syntax");
+                else throw new SyntaxException("Invalid member access syntax");
+
+            } else throw new TypeMismatch("Array element access expression is not integer");
+        }
+
         HashMap<String, Object> index1 = accessMembers.get(0);
         HashMap<String, Object> index2 = accessMembers.get(1);
 
@@ -230,7 +265,6 @@ public abstract class Node {
                 } else throw new SyntaxException("Invalid modifiable array syntax");
             } else throw new SyntaxException("Invalid modifiable array syntax");
         } else throw new TypeMismatch("Array element access expression is not integer");
-
     }
 
     protected String getRecordType(ArrayList<HashMap<String,Object>> recordMembers, ArrayList<HashMap<String,Object>> accessMembers) throws Exception {
@@ -350,6 +384,7 @@ public abstract class Node {
                     ArrayList<HashMap<String, Object>> mods = (ArrayList<HashMap<String, Object>>) modifvar.get("mods");
                     String type = "";
                     ArrayList<HashMap<String, Object>> members = null;
+                    HashMap<String,Object> array = null;
                     //Check if modifiable exists
                     if (symbolsDeclarations.containsKey(modifName))
                     {
@@ -360,8 +395,9 @@ public abstract class Node {
                             //Check if access is possible and get type of the member
                             type = getRecordType(members, mods);
                         } else if (mods.get(0).get("type").equals("expression"))
+                            array = (HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit();
                             //Check if access is possible and get type of the member
-                            type = getArrayType(modifvar, mods);
+                            type = getArrayType((HashMap<String, Object>) array.get("type"), mods);
                         return type;
                     }
                     else throw new SyntaxException("Undeclared record: " + modifName);
