@@ -1,5 +1,7 @@
 package helpers;
 import com.sun.corba.se.impl.io.TypeMismatchException;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
+
 import java.util.*;
 
 //I think that functions for processing
@@ -31,6 +33,7 @@ public class ProgramNode extends Node {
             HashMap<String, Object> rootUnit = ((HashMap<String, Object>) elem.get("Content"));
             String unit = (String) rootUnit.get("statement");
             if (unit.equals("var")) {//variable declaration type extraction
+                if (symbolsDeclarations.containsKey(rootUnit.get("name"))) throw new SyntaxException("Variable has already been declared: "+ rootUnit.get("name"));
                 if (((String) rootUnit.get("hastype")).equals("true")) {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
@@ -52,12 +55,14 @@ public class ProgramNode extends Node {
 
                     symbolsDeclarations.put((String) rootUnit.get("name"), s);
                 } else {
+                    if (symbolsDeclarations.containsKey(rootUnit.get("name"))) throw new SyntaxException("Variable has already been declared: "+ rootUnit.get("name"));
                     //if type is declared via expression calculation like "var a: integer is (5+5)*10"
                     String valueType = calculateExpressionResult(rootUnit.get("expression"));
                     Symbol s = new Symbol(valueType, (String) rootUnit.get("name"), rootUnit);
                     symbolsDeclarations.put((String) rootUnit.get("name"), s);
                 }
             } else if(unit.equals("declaration")){//if we have routine declaration "routine a() : integer"
+                if (namesRoutines.contains(rootUnit.get("name"))) throw new SyntaxException("Routine has already been declared: "+ rootUnit.get("name"));
                 RoutineNode routine = new RoutineNode((String) rootUnit.get("name"), rootUnit);
                 //we add it separate list of routines
                 routines.add(routine);
@@ -66,6 +71,7 @@ public class ProgramNode extends Node {
                 symbolsDeclarations.put((String) rootUnit.get("name"),
                         new Symbol("routine", (String) rootUnit.get("name"), routine));
             }else if(unit.equals("type")){//if we have type declaration
+                if (typeMappings.containsKey(rootUnit.get("name"))) throw new SyntaxException("Type has already been declared: "+ rootUnit.get("name"));
                 //Add type mapping to the list
                 typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));
             } else throw new Exception("Invalid syntax. Routine or declaration expected");
