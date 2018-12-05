@@ -70,6 +70,8 @@ public class ProgramNode extends Node {
                 namesRoutines.add((String) rootUnit.get("name"));
                 symbolsDeclarations.put((String) rootUnit.get("name"),
                         new Symbol("routine", (String) rootUnit.get("name"), routine));
+
+                routineEndTypes.put((String) rootUnit.get("name"), getLastKnownType());
             }else if(unit.equals("type")){//if we have type declaration
                 if (typeMappings.containsKey(rootUnit.get("name"))) throw new SyntaxException("Type has already been declared: "+ rootUnit.get("name"));
                 //Add type mapping to the list

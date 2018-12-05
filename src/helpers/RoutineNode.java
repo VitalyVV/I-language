@@ -41,7 +41,8 @@ public class RoutineNode extends Node {
 
     public void setTypes(HashMap<String, String> types){
 
-        this.typeMappings =(HashMap<String, String>) types.clone();
+        if (types!=null)
+        this.typeMappings = (HashMap<String, String>) types.clone();
     }
 
 

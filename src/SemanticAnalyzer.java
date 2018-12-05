@@ -79,27 +79,30 @@ public class SemanticAnalyzer{
 
             globalScope.insert(s);
             if (s.getType().equals("routine")){
+                currentScope.insertTypes(node.getRoutineType(s.getName()));
                 RoutineNode rnode = (RoutineNode) entry.getValue().getUnit();
                 //RoutineNode rnode = new RoutineNode(entry.getKey(), ((RoutineNode)s.getUnit()).getRoutine());
                 rnode.setSymbols(currentScope.symbols);
+                rnode.setTypes(currentScope.types);
                 rnode.createTable();
                 visitRoutine(rnode);
             }
 
-            globalScope.printTable();
+            //globalScope.printTable();
         }
 
         //get all declared variables
-        try{
-            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
-            if (symbols!=null) globalScope.insert(symbols);
-            for (String key: symbols.keySet()){
-                System.out.println(key+" "+symbols.get(key).getType().toString());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            return;
-        }
+        globalScope.printTable();
+//        try{
+//            LinkedHashMap<String, Symbol> symbols = node.getSymbols();
+//            if (symbols!=null) globalScope.insert(symbols);
+//            for (String key: symbols.keySet()){
+//                System.out.println(key+" "+symbols.get(key).getType().toString());
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return;
+//        }
 
 //        //TODO - check declared values
 //

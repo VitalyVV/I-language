@@ -14,13 +14,16 @@ public abstract class Node {
     private String name;
     protected int currentChild = 0;
 
+
     protected ArrayList<HashMap<String, Object>> children;
 
     //list of variable symbols only
     protected LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
 
     //type declarations
-    protected HashMap<String,String> typeMappings = new HashMap<>();
+    protected HashMap<String,String> typeMappings = new LinkedHashMap<>();
+
+    protected HashMap<String, HashMap<String, String>> routineEndTypes = new HashMap<>();
 
     Iterator<Map.Entry<String,Symbol>>entries;
     //list of routines only
@@ -34,6 +37,24 @@ public abstract class Node {
 
     public String getName(){
         return name;
+    }
+
+
+    //For passing the types declared in parent before entering the sub-scope
+    protected HashMap<String, String> getLastKnownType(){
+
+        HashMap<String, String> typesExisted = new HashMap<>();
+        Map.Entry<String,String> lastElement;
+        Iterator<Map.Entry<String,String>> types = typeMappings.entrySet().iterator();
+        while (types.hasNext()) {
+            lastElement = types.next();
+            typesExisted.put(lastElement.getKey(), lastElement.getValue());
+        }
+        return typesExisted;
+    }
+
+    public HashMap<String, String> getRoutineType(String nameR){
+        return routineEndTypes.get(nameR);
     }
 
     public Map.Entry<String, Symbol> getChild(){
