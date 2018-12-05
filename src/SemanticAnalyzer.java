@@ -11,7 +11,7 @@ public class SemanticAnalyzer{
     //Contains symbols, which keep insert order
     private class SymbolTable {
 
-        private Map<String, Symbol> symbols = new LinkedHashMap<>();
+        private LinkedHashMap<String, Symbol> symbols = new LinkedHashMap<>();
         private String name;
         private int level;
         private SymbolTable enclosingScope = null;
@@ -59,9 +59,10 @@ public class SemanticAnalyzer{
 //    }
 //    }
 
-    private void visitRoot(ProgramNode node){
+    private void visitRoot(ProgramNode node) throws Exception{
         SymbolTable globalScope = new SymbolTable(node.getName(), 1);
         this.currentScope = globalScope;
+        node.createSymbols();
 
         while (true){
             Map.Entry<String, Symbol> entry = node.getChild();
@@ -69,7 +70,7 @@ public class SemanticAnalyzer{
 
             Symbol s = entry.getValue();
             if (s.getType().equals("routine")){
-                RoutineNode rnode = new RoutineNode(entry.getKey(), (HashMap<String, Object>)s.getUnit());
+                RoutineNode rnode = new RoutineNode(entry.getKey(), ((RoutineNode)s.getUnit()).getRoutine());
                 visitRoutine(rnode);
             }
 
@@ -100,11 +101,12 @@ public class SemanticAnalyzer{
 //        }
     }
 
-    private void visitRoutine (RoutineNode node) {
+    private void visitRoutine (RoutineNode node) throws Exception{
         SymbolTable procScope = new SymbolTable(node.getName(), this.currentScope.level + 1, this.currentScope);
         currentScope = procScope;
         System.out.println(procScope.name + " " + procScope.level);
-
+        node.setSymbols(currentScope.enclosingScope.symbols);
+        node.createTable();
 
         while (true) {
             Map.Entry<String, Symbol> entry = node.getChild();
@@ -152,7 +154,7 @@ public class SemanticAnalyzer{
     }
 
 
-    public void analyze(ArrayList<HashMap<String, Object>> toAst){
+    public void analyze(ArrayList<HashMap<String, Object>> toAst) throws Exception{
         ProgramNode program = new ProgramNode("Program", toAst);
         visitRoot(program);
     }
