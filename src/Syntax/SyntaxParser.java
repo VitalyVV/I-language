@@ -621,6 +621,7 @@ public class SyntaxParser {
             word = tokens.get(index);
         }
         temp.put("is", "primary");
+        temp.put("hasright", "false");
         if (word.equals("$$true") || word.equals("$$false")) {
             temp.put("type", "boolean");
             temp.put("value", word.replaceAll("\\$", ""));
