@@ -14,10 +14,10 @@ public class IfNode extends Node {
     ArrayList<HashMap<String, Object>>  else_body;
     boolean hasElse = false;
 
-    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, String> types, HashMap<String,Object> element) throws Exception {
+    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String,Object> element) throws Exception {
         super(name);
         symbolsDeclarations = (LinkedHashMap<String, Symbol>) scope.clone();
-        typeMappings = (HashMap<String, String>) types.clone();
+        typeMappings = (HashMap<String, Object>) types.clone();
         originalScope = scope;
         ifElement = element;
         body = (ArrayList<HashMap<String, Object>> ) ifElement.get("body");
@@ -36,7 +36,7 @@ public class IfNode extends Node {
 
     public void parseBodies() throws Exception {
         HashMap<String,Object> expression = (HashMap<String, Object>) ifElement.get("expression") ;
-        String expressionType = "boolean"; //calculateExpressionResult(ifElement.get("expression"));
+        String expressionType = calculateExpressionResult(ifElement.get("expression"));
         if (expressionType.equals("boolean") || (expressionType.equals("integer") && isIntBooleanable(expression)))
         {
             parseBody(body);

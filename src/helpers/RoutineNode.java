@@ -56,10 +56,10 @@ public class RoutineNode extends Node {
         this.symbolsDeclarations = (LinkedHashMap<String, Symbol>) symbols.clone();
     }
 
-    public void setTypes(HashMap<String, String> types){
+    public void setTypes(HashMap<String, Object> types){
 
         if (types!=null)
-        this.typeMappings = (HashMap<String, String>) types.clone();
+        this.typeMappings = (HashMap<String, Object>) types.clone();
     }
 
     //Checks if given arguments are compatible with the function

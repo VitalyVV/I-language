@@ -34,6 +34,8 @@ public class ProgramNode extends Node {
             String unit = (String) rootUnit.get("statement");
             if (unit.equals("var")) {//variable declaration type extraction
                 if (symbolsDeclarations.containsKey(rootUnit.get("name"))) throw new SyntaxException("Variable has already been declared: "+ rootUnit.get("name"));
+                if (typeMappings.containsKey(rootUnit.get("name"))) throw new SyntaxException("Type has already been declared: "+ rootUnit.get("name") +" can't create a variable with such name.");
+
                 if (((String) rootUnit.get("hastype")).equals("true")) {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
@@ -78,6 +80,7 @@ public class ProgramNode extends Node {
 
                 routineEndTypes.put((String) rootUnit.get("name"), getLastKnownType());
             }else if(unit.equals("type")){//if we have type declaration
+                if (symbolsDeclarations.containsKey(rootUnit.get("name"))) throw new SyntaxException("Variable has already been declared: "+ rootUnit.get("name")+" can't call a new type with such name");
                 if (typeMappings.containsKey(rootUnit.get("name"))) throw new SyntaxException("Type has already been declared: "+ rootUnit.get("name"));
                 //Add type mapping to the list
                 typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));

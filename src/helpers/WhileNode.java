@@ -11,10 +11,10 @@ public class WhileNode extends Node {
     HashMap<String,Object> whileElement;
     ArrayList<HashMap<String, Object>> body;
 
-    public WhileNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, String> types, HashMap<String,Object> element) throws Exception {
+    public WhileNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String,Object> element) throws Exception {
         super(name);
         symbolsDeclarations = (LinkedHashMap<String, Symbol>)scope.clone();
-        typeMappings = (HashMap<String, String>) types.clone();
+        typeMappings = (HashMap<String, Object>) types.clone();
         whileElement = element;
         body = (ArrayList<HashMap<String, Object>> ) whileElement.get("body");
         parseWhileBody();

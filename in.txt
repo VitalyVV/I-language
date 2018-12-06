@@ -24,7 +24,9 @@ routine bar (k: real): integer is
         var a: integer
     end
 
-    type a is integer
+    type b is integer
+
+    var p: a
 
     bar(12.1)
     var e: integer is bar(10.1)

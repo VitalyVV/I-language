@@ -22,9 +22,9 @@ public abstract class Node {
     protected LinkedHashMap<String, Symbol> symbolsDeclarations = new LinkedHashMap<>();
 
     //type declarations
-    protected HashMap<String,String> typeMappings = new LinkedHashMap<>();
+    protected HashMap<String,Object> typeMappings = new LinkedHashMap<>();
 
-    protected HashMap<String, HashMap<String, String>> routineEndTypes = new HashMap<>();
+    protected HashMap<String, HashMap<String, Object>> routineEndTypes = new HashMap<>();
 
     Iterator<Map.Entry<String,Symbol>>entries;
     //list of routines only
@@ -42,11 +42,11 @@ public abstract class Node {
 
 
     //For passing the types declared in parent before entering the sub-scope
-    protected HashMap<String, String> getLastKnownType(){
+    protected HashMap<String, Object> getLastKnownType(){
 
-        HashMap<String, String> typesExisted = new HashMap<>();
-        Map.Entry<String,String> lastElement;
-        Iterator<Map.Entry<String,String>> types = typeMappings.entrySet().iterator();
+        HashMap<String, Object> typesExisted = new HashMap<>();
+        Map.Entry<String,Object> lastElement;
+        Iterator<Map.Entry<String,Object>> types = typeMappings.entrySet().iterator();
         while (types.hasNext()) {
             lastElement = types.next();
             typesExisted.put(lastElement.getKey(), lastElement.getValue());
@@ -54,7 +54,7 @@ public abstract class Node {
         return typesExisted;
     }
 
-    public HashMap<String, String> getRoutineType(String nameR){
+    public HashMap<String, Object> getRoutineType(String nameR){
         return routineEndTypes.get(nameR);
     }
 
@@ -134,9 +134,8 @@ public abstract class Node {
             } else if (typeMappings.containsKey(typeVarName))
             {
                 //Get mapped basic type from the list
-                return typeMappings.get(typeVarName);
-            }
-            else throw new Exception("No such identifier declared: "+typeVarName);
+                return (String) typeMappings.get(typeVarName);
+            } else throw new Exception("No such identifier declared: "+typeVarName);
         }
         else if (a.containsKey("array")){
             return "array";
@@ -531,6 +530,8 @@ public abstract class Node {
 
             else if (cont.get("statement").equals("var")){ //If variable declaration
                 if (symbolsDeclarations.containsKey(cont.get("name"))) throw new WrongSyntaxException("Variable has already been declared: "+cont.get("name"));
+                if (typeMappings.containsKey(cont.get("name"))) throw new SyntaxException("Type has already been declared: "+ cont.get("name") +" can't create a variable with such name.");
+
                 if (cont.get("hastype").equals("true")) {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
@@ -562,6 +563,8 @@ public abstract class Node {
             else if (cont.get("statement").equals("type")){
                 //Add type mapping to the listvar e: integer is bar(10.1)
                 if (typeMappings.keySet().contains(cont.get("name"))) throw new WrongSyntaxException("Type has already been declared: "+ cont.get("name"));
+                if (symbolsDeclarations.containsKey(cont.get("name"))) throw new SyntaxException("Variable has already been declared: "+ cont.get("name")+" can't call a new type with such name");
+
                 typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
             } else throw new WrongSyntaxException("Unknown statement type: "+ cont.get("statement"));
         }
