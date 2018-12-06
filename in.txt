@@ -19,6 +19,9 @@ routine bar (k: real): integer is
         end
     end
 
+    for ez in 1 .. 2 loop
+        bar(11.2)
+    end
 
     type a is record
         var a: integer

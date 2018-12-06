@@ -46,7 +46,7 @@ public class ProgramNode extends Node {
                     } else if (rootUnit.containsKey("value")) { //Vars that have type may have "is" expressions too
                         //Inference expression type
                         String expressionResult = calculateExpressionResult(rootUnit.get("value"));
-                        if (varType.equals("boolean") &&  expressionResult.equals("integer") && !isIntBooleanable(rootUnit)) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
+                        if (varType.equals("boolean") &&  expressionResult.equals("integer") && !isIntBooleanable((HashMap<String, Object>) rootUnit.get("value"))) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
                         //If expression type is the same as declared type
                         if (expressionResult.equals(varType) || (varType.equals("boolean") &&  expressionResult.equals("integer")))
                         {
