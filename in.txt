@@ -18,6 +18,15 @@ routine bar (k: real): integer is
             end
         end
     end
+
+
+    type a is record
+        var a: integer
+    end
+
+    type a is integer
+
+    bar(12.1)
+    var e: integer is bar(10.1)
 end
 
-var e: integer is bar(10.1)

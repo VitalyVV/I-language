@@ -530,6 +530,7 @@ public abstract class Node {
 
 
             else if (cont.get("statement").equals("var")){ //If variable declaration
+                if (symbolsDeclarations.containsKey(cont.get("name"))) throw new WrongSyntaxException("Variable has already been declared: "+cont.get("name"));
                 if (cont.get("hastype").equals("true")) {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
@@ -559,12 +560,10 @@ public abstract class Node {
                 }
             }
             else if (cont.get("statement").equals("type")){
-                //Add type mapping to the list
-                if (typeMappings.keySet().contains(cont.get("name"))){
-                    typeMappings.remove(cont.get("name"));
-                }
+                //Add type mapping to the listvar e: integer is bar(10.1)
+                if (typeMappings.keySet().contains(cont.get("name"))) throw new WrongSyntaxException("Type has already been declared: "+ cont.get("name"));
                 typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
-            }
+            } else throw new WrongSyntaxException("Unknown statement type: "+ cont.get("statement"));
         }
 
     }
