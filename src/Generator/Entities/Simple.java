@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 public class Simple {
     private Factor leftFactor;
-    private String op;
+    private String op = "";
     private Object rigthFactor;
-    private String rightType;
+    private String rightType = "";
 
     public Simple(HashMap<String, Object> map) {
         HashMap<String, Object> mm = new HashMap<>();
@@ -27,11 +27,11 @@ public class Simple {
     }
 
     public String toJavaCode() {
-        StringBuilder result = new StringBuilder(main.toJavaCode());
-        for (String op : ops
-                ) {
-            result.append(op).append(factors.remove(0).toJavaCode());
-        }
+        StringBuilder result = new StringBuilder(leftFactor.toJavaCode());
+        if (rightType.equals("Factor"))
+            result.append(op).append(((Factor)rigthFactor).toJavaCode());
+        else if (rightType.equals("Simple"))
+            result.append(op).append(((Simple)rigthFactor).toJavaCode());
         return result.toString();
     }
 }

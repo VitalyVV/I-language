@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 public class Factor {
     private Summand left;
-    private String op;
+    private String op = "";
     private Object right;
-    private String rightType;
+    private String rightType = "";
 
     public Factor(HashMap<String, Object> map) {
         this.left = new Summand((HashMap<String, Object>) map.get("left"));
@@ -15,11 +15,11 @@ public class Factor {
             HashMap<String, Object> right = (HashMap<String, Object>)map.get("right");
             if (((String)right.get("is")).equals("factor")){
                 rightType = "Factor";
-                this.right = new Summand((HashMap<String, Object>)map.get("right"));
-            }
-            else if (((String)right.get("is")).equals("relation")){
-                rightType = "Simple";
                 this.right = new Factor((HashMap<String, Object>)map.get("right"));
+            }
+            else if (((String)right.get("is")).equals("summand")){
+                rightType = "Summand";
+                this.right = new Summand((HashMap<String, Object>)map.get("right"));
             }
             this.op = (String)map.get("op");
         }
@@ -29,14 +29,12 @@ public class Factor {
 //        this.main = new Summand((HashMap<String, Object>) map.get("left"));
 //    }
 
-
-
     public String toJavaCode() {
         StringBuilder result = new StringBuilder(left.toJavaCode());
-        for (String op: ops
-             ) {
-            result.append(op).append(summands.remove(0).toJavaCode());
-        }
+        if (rightType.equals("Factor"))
+            result.append(op).append(((Factor) right).toJavaCode());
+        else if (rightType.equals("Summand"))
+            result.append(op).append(((Summand)right).toJavaCode());
         return result.toString();
     }
 }

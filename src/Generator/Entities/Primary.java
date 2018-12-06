@@ -20,7 +20,7 @@ public class Primary {
             if (map.containsKey("sign")) sign = new Sign((String) map.get("sign"));
             mainIntegerLiteral = new IntegerLiteral(Integer.valueOf((String) map.get("value")));
         } else if (map.get("type").equals("boolean")){
-            mainBooleanLiteral = Boolean.getBoolean((String) map.get("value"));
+            mainBooleanLiteral = Boolean.valueOf((String) map.get("value"));
         } else if (map.get("type").equals("modifiable"))
             mainModifiablePrimary = new ModifiablePrimary((HashMap<String, Object>) map.get("value"));
     }
