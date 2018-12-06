@@ -23,6 +23,7 @@ public abstract class Node {
 
     //type declarations
     protected HashMap<String,Object> typeMappings = new LinkedHashMap<>();
+    protected HashMap<String,Object> memberMappings = new HashMap<>();
 
     protected HashMap<String, HashMap<String, Object>> routineEndTypes = new HashMap<>();
 
@@ -390,7 +391,17 @@ public abstract class Node {
             HashMap<String,Object> record = (HashMap<String,Object>) type.get("record");
             ArrayList<HashMap<String,Object>> members = (ArrayList<HashMap<String,Object>>) record.get("content");
             return members;
-        } else throw new SyntaxException("Not a record: "+ unit.get("name"));
+        } else if (type.containsKey("identifier"))
+        {
+            if(memberMappings.containsKey(type.get("identifier")))
+            {
+                HashMap<String,Object> record = (HashMap<String,Object>) memberMappings.get(type.get("identifier"));
+                record = (HashMap<String, Object>) record.get("record");
+                ArrayList<HashMap<String,Object>> members = (ArrayList<HashMap<String,Object>>) record.get("content");
+                return members;
+            } else throw new SyntaxException("Not a record: "+ unit.get("name"));
+        }
+        else throw new SyntaxException("Not a record: "+ unit.get("name"));
     }
 
     protected String getModifiableType(HashMap<String, Object> modifvar) throws Exception {
@@ -565,6 +576,10 @@ public abstract class Node {
                 if (symbolsDeclarations.containsKey(cont.get("name"))) throw new SyntaxException("Variable has already been declared: "+ cont.get("name")+" can't call a new type with such name");
 
                 typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
+                if (getType(cont.get("type")).equals("record"))
+                {
+                    memberMappings.put((String) cont.get("name"), cont.get("type"));
+                }
             } else throw new WrongSyntaxException("Unknown statement type: "+ cont.get("statement"));
         }
 
