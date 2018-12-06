@@ -1,17 +1,23 @@
-routine kek(i:integer): integer is
-    var a : integer
-    a := i
+routine bar (k: real): integer is
+    var z: real is k
 
+
+    while false and false loop
+        type aaa is integer
+        bar(1.2)
+        var ep: aaa is 8
+        var me: integer is ep
+
+        if 4 < 5 then
+           type newType is real
+           me := 8
+           var b : newType
+        end
+    end
+
+    for ne in 1 .. 2 loop
+                bar(1.2)
+            end
 end
 
-type vasa is integer
-type vasa is real
-
-var rec: record
-    var j: array [12] boolean
-end
-
-routine bar (k: real) is
-    rec.j[k % body * 10] := 6 <= 8
-    bar(j,o)
-end
+var e: integer is bar(10.1)
