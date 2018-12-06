@@ -352,9 +352,8 @@ public class SyntaxParser {
     private HashMap<String, Object> parseIfStatement() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
         temp.put("statement", "if");
-        String word = nextWord();
         temp.put("expression", parseExpression());
-        word = nextWord();
+        String word = nextWord();
         if (word.equals("$$then")) {
             temp.put("body", parseBody());
             if (tokens.get(index).equals("$$else")) {
