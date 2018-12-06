@@ -1,6 +1,5 @@
 routine bar (k: real): integer is
     var z: real
-    z := k
 
     while false and false loop
         type aaa is integer
@@ -18,6 +17,8 @@ routine bar (k: real): integer is
             end
         end
     end
+
+    var a: integer is bar (5.5)
 end
 
 var e: integer is bar(10.1)

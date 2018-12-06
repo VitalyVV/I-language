@@ -530,6 +530,10 @@ public abstract class Node {
 
 
             else if (cont.get("statement").equals("var")){ //If variable declaration
+
+                if (symbolsDeclarations.keySet().contains(cont.get("name"))){
+                    throw new Exception("Var "+ cont.get("name")+" has been already declared");
+                }
                 if (cont.get("hastype").equals("true")) {
                     //if type is already declared via "var a: integer"
                     Symbol s = null;
