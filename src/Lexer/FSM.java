@@ -94,9 +94,10 @@ public class FSM {
     }
 
     private void initialState(){
-        if (Character.isDigit(input[cur]) || input[cur]=='.'){
-            if (cur < input.length){
-                    if (cur+1 < input.length) {
+        if(cur < input.length) {
+            if (Character.isDigit(input[cur]) || input[cur] == '.') {
+                if (cur < input.length) {
+                    if (cur + 1 < input.length) {
                         if (input[cur] == '.') {
                             if (input[cur + 1] != '.') {
                                 state = input[cur] == '.' ? 6 : 2;
@@ -109,24 +110,23 @@ public class FSM {
                             state = input[cur] == '.' ? 6 : 2;
                         }
                     }
-                buf += input[cur];
-            }
-        }
-        if (in(input[cur])) {
-            state=1;
-            if (isComplex(input[cur])) {
-                tokens.add(getComplex());
-                cur += 2;
-            } else {
-                tokens.add(Character.toString(input[cur]));
-            }
-        }
-        if(cur < input.length){
-            if(Character.isAlphabetic(input[cur]) || input[cur] == '"'){
-                if (input[cur] == '"'){
-                    state=7;
-                }else{
-                    state=3;
+                    if (cur < input.length) {
+                        buf += input[cur];
+                    }
+                }
+            }else if (in(input[cur])) {
+                state = 1;
+                if (isComplex(input[cur])) {
+                    tokens.add(getComplex());
+                    cur += 2;
+                } else {
+                    tokens.add(Character.toString(input[cur]));
+                }
+            }else if(Character.isAlphabetic(input[cur]) || input[cur] == '"') {
+                if (input[cur] == '"') {
+                    state = 7;
+                } else {
+                    state = 3;
                 }
                 buf += input[cur];
             }
