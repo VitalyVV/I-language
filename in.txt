@@ -27,11 +27,11 @@ routine bar (k: real): integer is
     var e: integer is bar(10.1)
 end
 
-    type a is record
+    type a is array [12] record
         var a: integer
     end
 
     var p: a
 
-    var n: integer is p.a
+    var n: integer is p[1].a
 

@@ -84,7 +84,7 @@ public class ProgramNode extends Node {
                 if (typeMappings.containsKey(rootUnit.get("name"))) throw new SyntaxException("Type has already been declared: "+ rootUnit.get("name"));
                 //Add type mapping to the list
                 typeMappings.put((String)rootUnit.get("name"),getType(rootUnit.get("type")));
-                if (getType(rootUnit.get("type")).equals("record"))
+                if (getType(rootUnit.get("type")).equals("record") || getType(rootUnit.get("type")).equals("array"))
                 {
                     memberMappings.put((String) rootUnit.get("name"), rootUnit.get("type"));
                 }

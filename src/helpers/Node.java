@@ -434,6 +434,14 @@ public abstract class Node {
                 } else if (mods.get(0).get("type").equals("expression"))
                 {
                     array = (HashMap<String, Object>) symbolsDeclarations.get(modifName).getUnit();
+                    HashMap<String,Object> typ = (HashMap<String, Object>) array.get("type");
+                    if (typ.containsKey("identifier"))
+                    {
+                        if (memberMappings.containsKey(typ.get("identifier")))
+                        {
+                            type = getArrayType((HashMap<String,Object>) memberMappings.get(typ.get("identifier")), mods);
+                        }  else throw new SyntaxException("Undeclared type mapping for: " + typ.get("identifier"));
+                    } else
                     //Check if access is possible and get type of the member
                     type = getArrayType((HashMap<String, Object>) array.get("type"), mods);
                 }
@@ -576,7 +584,7 @@ public abstract class Node {
                 if (symbolsDeclarations.containsKey(cont.get("name"))) throw new SyntaxException("Variable has already been declared: "+ cont.get("name")+" can't call a new type with such name");
 
                 typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
-                if (getType(cont.get("type")).equals("record"))
+                if (getType(cont.get("type")).equals("record") || getType(cont.get("type")).equals("array"))
                 {
                     memberMappings.put((String) cont.get("name"), cont.get("type"));
                 }
