@@ -506,17 +506,18 @@ public abstract class Node {
 
                 //Create new nodes on current scope with expression checking in the node class TODO
             } else if (cont.get("statement").equals("if")){
-                IfNode ifnode = new IfNode("if", symbolsDeclarations, cont);
+                IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont);
+
             }
 
             //create new subscope for
             else if (cont.get("statement").equals("for")){
-                IfNode fornode = new IfNode("for", symbolsDeclarations, cont);
+                IfNode fornode = new IfNode("for", symbolsDeclarations,typeMappings, cont);
             }
 
             //create new subscope while
             else if (cont.get("statement").equals("while")){
-                WhileNode whilenode = new WhileNode("while", symbolsDeclarations, cont);
+                WhileNode whilenode = new WhileNode("while", symbolsDeclarations,typeMappings, cont);
             }
 
 

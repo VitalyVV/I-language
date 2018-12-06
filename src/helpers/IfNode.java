@@ -14,9 +14,10 @@ public class IfNode extends Node {
     ArrayList<HashMap<String, Object>>  else_body;
     boolean hasElse = false;
 
-    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String,Object> element) throws Exception {
+    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, String> types, HashMap<String,Object> element) throws Exception {
         super(name);
-        symbolsDeclarations = scope;
+        symbolsDeclarations = (LinkedHashMap<String, Symbol>) scope.clone();
+        typeMappings = (HashMap<String, String>) types.clone();
         originalScope = scope;
         ifElement = element;
         body = (ArrayList<HashMap<String, Object>> ) ifElement.get("body");
