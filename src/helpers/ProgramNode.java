@@ -9,10 +9,6 @@ import java.util.*;
 
 public class ProgramNode extends Node {
 
-    public ProgramNode(String name){
-        super(name);
-    }
-
     public String getMethod(){
         return "Root";
     }
