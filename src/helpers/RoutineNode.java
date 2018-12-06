@@ -115,7 +115,26 @@ public class RoutineNode extends Node {
         symbolsDeclarations.put((String) routine.get("name"),
                 new Symbol("routine", (String) routine.get("name"), rout));
 
-//
+            //
+        if (routine.keySet().contains("parameters")){
+            ArrayList<HashMap<String, Object>> params = (ArrayList<HashMap<String, Object>>) routine.get("parameters");
+            //add parameters to param list and symbols
+            for (HashMap<String, Object> elem:params){
+                if (elem.keySet().contains("name")) {
+                    String parName = (String) elem.get("name");
+
+                    String type = getType(elem.get("type"));
+                    Symbol s = new Symbol(type, parName, elem);
+
+                    if (symbolsDeclarations.keySet().contains(parName)){
+                        symbolsDeclarations.remove(parName);
+
+                    }
+                    symbolsDeclarations.put(parName, s);
+//                    innerSymbolsDeclarations.put(parName, s);
+                }}
+
+        }
             //parse body statements if exist
         if (routine.containsKey("body")){
             parseBody((ArrayList<HashMap<String, Object>>) routine.get("body"));

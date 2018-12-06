@@ -1,11 +1,6 @@
-var rec: record
-    var j: array [12] boolean
-end
-
 routine bar (k: real): integer is
-    rec.j[5 % 5 * 10] := 1
-    rec.j[5 % 5 * 10] := +1
-    var z: integer
+    var z: real is k
+
 
     while false and false loop
         type aaa is integer
@@ -20,10 +15,9 @@ routine bar (k: real): integer is
         end
     end
 
-
     for ne in 1 .. 2 loop
-            bar(1.2)
-        end
+                bar(1.2)
+            end
 end
 
 var e: integer is bar(10.1)
