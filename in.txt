@@ -8,9 +8,20 @@ var rec: record
     var j: array [12] boolean
 end
 
-routine bar (k: real) is
+type rece is integer
+var p: rece
+var m: integer is p
+
+
+routine bar (k: real): integer is
+    a := 2
     rec.j[5 % 5 * 10] := 1
     rec.j[5 % 5 * 10] := +1
-    rec.j[5 % 5 * 10] := -1
-    bar(j,o)
+    if true then
+        var ep:integer
+    else
+        var pe:integer
+    end
 end
+
+var e: integer is bar(10.1)

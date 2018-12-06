@@ -66,14 +66,12 @@ public abstract class Node {
         return entry;
     }
 
-
     public abstract String getMethod();
 
     public abstract LinkedHashMap<String, Symbol> getSymbols() throws Exception;
 
     //checks if a calculation between two types is possible
     protected boolean checkOperable(String a, String b){
-
         //I don't know, maybe not (with real and boolean)
         if ((a.equals("real") && b.equals("boolean")) || (a.equals("boolean") && b.equals("real"))){
             return false;
@@ -402,8 +400,8 @@ public abstract class Node {
                 return symbolsDeclarations.get(modifName).getType();
             }
             else if (namesRoutines.contains(modifName)){
-                int ind = namesRoutines.indexOf(modifName);
-                return routines.get(ind).getResultType();
+                RoutineSymbol routine = (RoutineSymbol) symbolsDeclarations.get(modifName).getUnit();
+                return routine.getType();
             }
             else throw new Exception("No such identifier declared: "+modifName);
         }
@@ -448,15 +446,17 @@ public abstract class Node {
                 return getModifiableType((HashMap<String, Object>) hashmaped.get("value"));
             }
             else if (typePrimary.equals("routinecall")){
-                HashMap<String, Object> hashmapedRotineCall = (HashMap<String, Object>) hashmaped.get("type");
-                String name = (String)hashmapedRotineCall.get("name");
+                HashMap<String, Object> hashmapedRotineCall = (HashMap<String, Object>) hashmaped.get("value");
+                String name = (String)hashmapedRotineCall.get("variable");
                 if (namesRoutines.contains(name)){
                     int index = namesRoutines.indexOf(name);
                     RoutineNode rnode = routines.get(index);
+                    ArrayList<HashMap<String,Object>> params = (ArrayList<HashMap<String, Object>>) hashmapedRotineCall.get("parameters");
+                    rnode.checkCompatibility(params);
                     return rnode.getResultType();
-                }
+                } else throw new Exception("Called routine was not declared "+ name);
             }
-            else throw new Exception("No such type exists: "+typePrimary);
+            else throw new Exception("No such type exists: " + typePrimary);
         }
 
         String result = calculateExpressionResult(hashmaped.get("left"));
@@ -465,15 +465,101 @@ public abstract class Node {
         if (mapedResultType.equals("factor") || mapedResultType.equals("relation") || mapedResultType.equals("simple")){
             if (((String)hashmaped.get("hasright")).equals("true")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
-                if (checkOperable(result, resultRight)){
-                    return getTypesResult(result, resultRight, (String)hashmaped.get("op"));
-                }
+                return getTypesResult(result, resultRight, (String)hashmaped.get("op"));
             } else return result;
             //Summand and expression have only left operands
         } else if (mapedResultType.equals("summand")) return result;
         else if (mapedResultType.equals("expression")) return result;
         else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
-        return null;
     }
+
+    void parseBody(Object bodyR) throws Exception{
+        ArrayList<HashMap<String, Object>> body = (ArrayList<HashMap<String, Object>>)bodyR;
+        for (HashMap<String, Object> elem: body){
+
+            //Get statement content
+            HashMap<String, Object> cont = (HashMap<String, Object>) elem.get("Content");
+
+            if (((String)cont.get("statement")).equals("call")){ //If function call
+                String name = (String) cont.get("variable");
+                if (symbolsDeclarations.containsKey(name) && symbolsDeclarations.get(name).getType().equals("routine")){
+                    Symbol routineS = symbolsDeclarations.get(name);
+                    RoutineNode rnode = (RoutineNode) routineS.getUnit();
+                    if (cont.keySet().contains("parameters")){
+                        //check that the function we call already exists, and number ant types of parameters we pass match
+                        ArrayList<HashMap<String, Object>> params = (ArrayList<HashMap<String, Object>>) cont.get("parameters");
+                        rnode.checkCompatibility(params);
+                    }
+                }
+                else
+                    throw new Exception("No such identifier previously declared: "+name);
+            } else if (cont.get("statement").equals("assignment")){ //check assignment correctness
+                String toAssign = calculateExpressionResult(cont.get("value")); //Assignment value
+                String assignableType = getModifiableType((HashMap<String, Object>) cont.get("name"));
+
+                if (assignableType.equals("boolean") &&  toAssign.equals("integer") && !isIntBooleanable(cont)) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
+                if (!assignableType.equals(toAssign) && !(assignableType.equals("boolean") &&  toAssign.equals("integer")))
+                {
+                    HashMap<String,Object> assignable = (HashMap<String, Object>) cont.get("name");
+                    String assignableName = (String) assignable.get("value");
+                    throw new WrongSyntaxException("Incompatible assignment type for variable \""+assignableName+"\" expected "+assignableType);
+                }
+                //Check for assignment result according to obtained types, if no match - exception is thrown
+
+                //Create new nodes on current scope with expression checking in the node class TODO
+            } else if (cont.get("statement").equals("if")){
+                System.out.println("aaa");
+            }
+
+            //create new subscope for
+            else if (cont.get("statement").equals("for")){
+
+            }
+
+            //create new subscope while
+            else if (cont.get("statement").equals("while")){
+
+            }
+
+
+            else if (cont.get("statement").equals("var")){ //If variable declaration
+                if (cont.get("hastype").equals("true")) {
+                    //if type is already declared via "var a: integer"
+                    Symbol s = null;
+                    String varType = getType(cont.get("type"));
+                    if (varType.equals("record") || varType.equals("array"))
+                    {
+                        s = new Symbol(varType, (String) cont.get("name"), cont);
+                    } else if (cont.containsKey("value")) { //Vars that have type may have "is" expressions too
+                        //Inference expression type
+                        String expressionResult = calculateExpressionResult(cont.get("value"));
+                        //If expression type is the same as declared type
+                        if (expressionResult.equals(varType))
+                        {
+                            s = new Symbol(varType, (String) cont.get("name"),cont);
+                        } else throw new TypeMismatchException("\nWrong expression result type for: " + cont.get("name") +
+                                ".\nExpected: "+ varType+". Got: " + expressionResult);
+
+                    } else s = new Symbol(varType, (String) cont.get("name"), cont);
+
+                    symbolsDeclarations.put((String) cont.get("name"), s);
+                } else {
+                    //if type is declared via expression calculation like "var a: integer is (5+5)*10"
+                    String valueType = calculateExpressionResult(cont.get("expression"));
+                    Symbol s = new Symbol(valueType, (String) cont.get("name"), cont);
+                    symbolsDeclarations.put((String) cont.get("name"), s);
+                }
+            }
+            else if (cont.get("statement").equals("type")){
+                //Add type mapping to the list
+                if (typeMappings.keySet().contains(cont.get("name"))){
+                    typeMappings.remove(cont.get("name"));
+                    typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
+                }
+            }
+        }
+
+    }
+
 }
 

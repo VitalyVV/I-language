@@ -20,6 +20,7 @@ public class IfNode extends Node {
 
     @Override
     public LinkedHashMap<String, Symbol> getSymbols() throws Exception {
+
         return null;
     }
 }

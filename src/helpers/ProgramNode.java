@@ -66,6 +66,10 @@ public class ProgramNode extends Node {
             } else if(unit.equals("declaration")){//if we have routine declaration "routine a() : integer"
                 if (namesRoutines.contains(rootUnit.get("name"))) throw new SyntaxException("Routine has already been declared: "+ rootUnit.get("name"));
                 RoutineNode routine = new RoutineNode((String) rootUnit.get("name"), rootUnit);
+                //Routines can't read declarations ahead of them
+                routine.setSymbols(symbolsDeclarations);
+                routine.setTypes(typeMappings);
+                routine.createTable();
                 //we add it separate list of routines
                 routines.add(routine);
                 //we add name of routine to find previously declared ones + to check if we actually have declared it

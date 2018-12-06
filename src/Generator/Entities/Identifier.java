@@ -12,4 +12,9 @@ public class Identifier implements Type{
     public String toJavaCode() {
         return name;
     }
+
+    @Override
+    public String getId() {
+        return null;
+    }
 }
