@@ -143,6 +143,8 @@ public class RoutineNode extends Node {
         } else if (routine.get("hastype").equals("true") && !routine.containsKey("body"))  //If there is a return type and no body
             throw new WrongSyntaxException("Routine " + routine.get("name") + " has to return "+ routine.get("type"));
 
+        // the last known variable should be declared in the end (after loops and ifs)
+        // if so, type is returned
         String res = getResultType();
         if (!res.equals("Null")){
             Object lastUnit = lastKnown.getUnit();
