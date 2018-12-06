@@ -552,8 +552,8 @@ public abstract class Node {
                 //Add type mapping to the list
                 if (typeMappings.keySet().contains(cont.get("name"))){
                     typeMappings.remove(cont.get("name"));
-                    typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
                 }
+                typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
             }
         }
 

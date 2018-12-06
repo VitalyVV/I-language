@@ -115,6 +115,7 @@ public class RoutineNode extends Node {
         symbolsDeclarations.put((String) routine.get("name"),
                 new Symbol("routine", (String) routine.get("name"), rout));
 
+//
             //parse body statements if exist
         if (routine.containsKey("body")){
             parseBody((ArrayList<HashMap<String, Object>>) routine.get("body"));
