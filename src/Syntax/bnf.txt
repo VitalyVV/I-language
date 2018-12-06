@@ -52,8 +52,8 @@
 
 +Expression : Relation { ("and" | "or" | "xor") } Relation
 Relation : Simple [ ( "less" | "lesseq" | "great" | "greateq" | "eq" | "noteq" ) Simple ]
-Simple : Factor { ( mul | "div" | "perc" ) Factor }
-Factor : Summand { ( "add" | "sub" ) Summand }
+Factor : Simple { ( "add" | "sub" ) Simple}
+Simple : Summand { ( mul | "div" | "perc" ) Summand }
 Summand : Primary | "lbr" Expression "rbr"
 Primary : [ Sign | "not" ] IntegerLiteral
         | [ Sign ] RealLiteral

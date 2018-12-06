@@ -441,8 +441,8 @@ public class SyntaxParser {
                 ++index;
                 out.put("is", "expression");
                 out.put("hasright", "true");
-                out.put("left", parseRelation());
-                out.put("right", new HashMap<String, Object>(temp));
+                out.put("right", parseRelation());
+                out.put("left", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
                 temp = out;
                 word = nextWord();
@@ -461,7 +461,7 @@ public class SyntaxParser {
     //Relation : Simple [ ( "$$less" | "$$lesseq" | "$$great" | "$$greateq" | "$$eq" | "noteq" ) Simple ]
     private HashMap<String, Object> parseRelation() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
-        temp.put("left", parseSimple());
+        temp.put("left", parseFactor());
         temp.put("is", "relation");
         String word = "";
         if (index < tokens.size()) {
@@ -473,7 +473,7 @@ public class SyntaxParser {
             ++index;
             word = nextWord();
             --index;
-            temp.put("right", parseSimple());
+            temp.put("right", parseFactor());
             HashMap<String, Object> out = new HashMap<>();
             boolean hadMore = false;
             word = nextWord();
@@ -483,8 +483,8 @@ public class SyntaxParser {
                 ++index;
                 out.put("is", "relation");
                 out.put("hasright", "true");
-                out.put("left", parseSimple());
-                out.put("right", new HashMap<String, Object>(temp));
+                out.put("right", parseFactor());
+                out.put("left", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
                 temp = out;
                 word = nextWord();
@@ -504,51 +504,10 @@ public class SyntaxParser {
                 word.equals("$$greateq") || word.equals("$$eq") || word.equals("$$noteq");
     }
 
-    //Simple : Factor { ( "mul" | "div" | "perc" ) Factor }
-    private HashMap<String, Object> parseSimple() throws WrongSyntaxException {
-        HashMap<String, Object> temp = new HashMap<>();
-        temp.put("left", parseFactor());
-        temp.put("is", "simple");
-        String word = "";
-        if (index < tokens.size()) {
-            word = tokens.get(index);
-        }
-        if (word.equals("$$mul") || word.equals("$$div") || word.equals("$$perc")) {
-            temp.put("hasright", "true");
-            temp.put("op", word.replaceAll("\\$", ""));
-            ++index;
-            word = nextWord();
-            --index;
-            temp.put("right", parseFactor());
-            HashMap<String, Object> out = new HashMap<>();
-            word = nextWord();
-            --index;
-            boolean hadMore = false;
-            while (word.equals("$$mul") || word.equals("$$div") || word.equals("$$perc")) {
-                hadMore = true;
-                ++index;
-                out.put("is", "simple");
-                out.put("hasright", "true");
-                out.put("left", parseFactor());
-                out.put("right", new HashMap<String, Object>(temp));
-                out.put("op", word.replaceAll("\\$", ""));
-                temp = out;
-                word = nextWord();
-            }
-            if (hadMore) {
-                --index;
-            }
-        } else {
-            temp.put("hasright", "false");
-        }
-
-        return temp;
-    }
-
     // Factor : Summand { ( "add" | "sub" ) Summand }
     private HashMap<String, Object> parseFactor() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
-        temp.put("left", parseSummand());
+        temp.put("left", parseSimple());
         String word = "";
         if (index < tokens.size()) {
             word = tokens.get(index);
@@ -560,7 +519,7 @@ public class SyntaxParser {
             ++index;
             word = nextWord();
             --index;
-            temp.put("right", parseSummand());
+            temp.put("right", parseSimple());
             HashMap<String, Object> out = new HashMap<>();
             boolean hadMore = false;
             word = nextWord();
@@ -570,8 +529,8 @@ public class SyntaxParser {
                 ++index;
                 out.put("is", "factor");
                 out.put("hasright", "true");
-                out.put("left", parseSummand());
-                out.put("right", new HashMap<String, Object>(temp));
+                out.put("right", parseSimple());
+                out.put("left", new HashMap<String, Object>(temp));
                 out.put("op", word.replaceAll("\\$", ""));
                 temp = out;
                 word = nextWord();
@@ -585,6 +544,49 @@ public class SyntaxParser {
 
         return temp;
     }
+
+    //Simple : Factor { ( "mul" | "div" | "perc" ) Factor }
+    private HashMap<String, Object> parseSimple() throws WrongSyntaxException {
+        HashMap<String, Object> temp = new HashMap<>();
+        temp.put("left", parseSummand());
+        temp.put("is", "simple");
+        String word = "";
+        if (index < tokens.size()) {
+            word = tokens.get(index);
+        }
+        if (word.equals("$$mul") || word.equals("$$div") || word.equals("$$perc")) {
+            temp.put("hasright", "true");
+            temp.put("op", word.replaceAll("\\$", ""));
+            ++index;
+            word = nextWord();
+            --index;
+            temp.put("right", parseSummand());
+            HashMap<String, Object> out = new HashMap<>();
+            word = nextWord();
+            --index;
+            boolean hadMore = false;
+            while (word.equals("$$mul") || word.equals("$$div") || word.equals("$$perc")) {
+                hadMore = true;
+                ++index;
+                out.put("is", "simple");
+                out.put("hasright", "true");
+                out.put("right", parseSummand());
+                out.put("left", new HashMap<String, Object>(temp));
+                out.put("op", word.replaceAll("\\$", ""));
+                temp = out;
+                word = nextWord();
+            }
+            if (hadMore) {
+                --index;
+            }
+        } else {
+            temp.put("hasright", "false");
+        }
+
+        return temp;
+    }
+
+
 
     //Summand : Primary | "lbr" Expression "rbr"
     private HashMap<String, Object> parseSummand() throws WrongSyntaxException {
