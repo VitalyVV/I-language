@@ -1,7 +1,10 @@
+import Generator.Entities.Expression;
 import Lexer.Lexer;
 import Syntax.SyntaxParser;
-import Syntax.TreeTranslator;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
@@ -16,16 +19,22 @@ public class Main {
         }
         lx.parseString(s.toString());
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
+        ArrayList<HashMap<String, Object>> oo = sp.getRoot();
+        HashMap<String, Object> inn = (HashMap<String, Object>) oo.get(0);
+        HashMap<String, Object> cont = (HashMap<String, Object>) inn.get("Content");
+        HashMap<String, Object> contl = (HashMap<String, Object>) cont.get("value");
+        Expression exp = new Expression(contl);
+        System.out.println(exp.toJavaCode());
 
-        TreeTranslator translator = new TreeTranslator(sp.getTree());
-        translator.translate();
-        SemanticAnalyzer ss = new SemanticAnalyzer();
-
-        try {
-            ss.analyze(sp.getRoot());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("1");
+//        Expression exp = new Expression();
+//        SemanticAnalyzer ss = new SemanticAnalyzer();
+//
+//        try {
+//            ss.analyze(sp.getRoot());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 }
