@@ -13,6 +13,8 @@ public abstract class Node {
     private String name;
     protected int currentChild = 0;
 
+    protected Symbol lastKnown = null;
+
 
     protected ArrayList<HashMap<String, Object>> children;
 
@@ -502,22 +504,28 @@ public abstract class Node {
                     String assignableName = (String) assignable.get("value");
                     throw new WrongSyntaxException("Incompatible assignment type for variable \""+assignableName+"\" expected "+assignableType);
                 }
+                HashMap<String,Object> assignable = (HashMap<String, Object>) cont.get("name");
+                String assignableName = (String) assignable.get("value");
+                lastKnown = symbolsDeclarations.get(assignableName);
                 //Check for assignment result according to obtained types, if no match - exception is thrown
 
                 //Create new nodes on current scope with expression checking in the node class TODO
             } else if (cont.get("statement").equals("if")){
                 IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont);
+                lastKnown = new Symbol("if", "if", null);
 
             }
 
             //create new subscope for
             else if (cont.get("statement").equals("for")){
                 IfNode fornode = new IfNode("for", symbolsDeclarations,typeMappings, cont);
+                lastKnown = new Symbol("for", "for", null);
             }
 
             //create new subscope while
             else if (cont.get("statement").equals("while")){
                 WhileNode whilenode = new WhileNode("while", symbolsDeclarations,typeMappings, cont);
+                lastKnown = new Symbol("while", "while", null);
             }
 
 
@@ -542,6 +550,7 @@ public abstract class Node {
                     } else s = new Symbol(varType, (String) cont.get("name"), cont);
 
                     symbolsDeclarations.put((String) cont.get("name"), s);
+                    lastKnown = s;
                 } else {
                     //if type is declared via expression calculation like "var a: integer is (5+5)*10"
                     String valueType = calculateExpressionResult(cont.get("expression"));

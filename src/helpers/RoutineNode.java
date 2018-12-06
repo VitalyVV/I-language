@@ -1,6 +1,7 @@
 package helpers;
 
 import Syntax.WrongSyntaxException;
+import com.sun.corba.se.impl.io.TypeMismatchException;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class RoutineNode extends Node {
     public int getNumParams(){
         return numParams;
     }
+
 
     //only for symbols declared inside the scope
     private LinkedHashMap<String, Symbol> innerSymbolsDeclarations = new LinkedHashMap<>();
@@ -140,6 +142,16 @@ public class RoutineNode extends Node {
             parseBody((ArrayList<HashMap<String, Object>>) routine.get("body"));
         } else if (routine.get("hastype").equals("true") && !routine.containsKey("body"))  //If there is a return type and no body
             throw new WrongSyntaxException("Routine " + routine.get("name") + " has to return "+ routine.get("type"));
+
+        String res = getResultType();
+        if (!res.equals("Null")){
+            Object lastUnit = lastKnown.getUnit();
+            if (lastUnit == null) throw new Exception("Missing return statement in routine: "+this.getName());
+            String lastType = getType(lastUnit);
+            if (!res.equals(lastType)){
+                throw new TypeMismatchException("Wrong return type. Expected: "+res+", got: "+lastType);
+            }
+        }
     }
 
 

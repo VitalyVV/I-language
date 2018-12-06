@@ -1,6 +1,6 @@
 routine bar (k: real): integer is
-    var z: real is k
-
+    var z: real
+    z := k
 
     while false and false loop
         type aaa is integer
@@ -12,12 +12,12 @@ routine bar (k: real): integer is
            type newType is real
            me := 8
            var b : newType
+        else
+            if true then
+                me := 9
+            end
         end
     end
-
-    for ne in 1 .. 2 loop
-                bar(1.2)
-            end
 end
 
 var e: integer is bar(10.1)
