@@ -337,9 +337,8 @@ public class SyntaxParser {
     //Range : Expression ".." Expression
     private HashMap<String, Object> parseRange() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
-        String word = nextWord();
         temp.put("expression_from", parseExpression());
-        word = nextWord();
+        String word = nextWord();
         if (word.equals("$$doubdot")) {
             temp.put("expression_to", parseExpression());
         } else {
