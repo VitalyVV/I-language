@@ -1,4 +1,3 @@
-
 import Lexer.Lexer;
 import Syntax.SyntaxParser;
 
@@ -24,16 +23,16 @@ public class Main {
         HashMap<String, Object> cont = (HashMap<String, Object>) inn.get("Content");
         HashMap<String, Object> contl = (HashMap<String, Object>) cont.get("value");
 
-
-        System.out.println("1");
-//      Expression exp = new Expression();
         SemanticAnalyzer ss = new SemanticAnalyzer();
-//
+
         try {
             ss.analyze(sp.getRoot());
         } catch (Exception e) {
             e.printStackTrace();
        }
+
+        CodeGenerator cg = new CodeGenerator();
+        String code = cg.generateCode(sp.getRoot());
 
     }
 }
