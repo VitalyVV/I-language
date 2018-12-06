@@ -122,7 +122,7 @@ public class FSM {
                 } else {
                     tokens.add(Character.toString(input[cur]));
                 }
-            }else if(Character.isAlphabetic(input[cur]) || input[cur] == '"') {
+            }else if(Character.isAlphabetic(input[cur]) || input[cur] == '_' || input[cur] == '"') {
                 if (input[cur] == '"') {
                     state = 7;
                 } else {
@@ -166,7 +166,7 @@ public class FSM {
             }
         // State 3 for parsing words
         } else if (state == 3){
-            if(Character.isAlphabetic(input[cur]) || input[cur]=='"'){
+            if(Character.isAlphabetic(input[cur]) || input[cur]=='"' || input[cur] == '_'){
                 if (input[cur]=='"'){
                     state=7;
                 }
