@@ -2,7 +2,6 @@ package helpers;
 
 import Syntax.WrongSyntaxException;
 import com.sun.corba.se.impl.io.TypeMismatchException;
-import jdk.nashorn.internal.runtime.regexp.joni.Syntax;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 import org.omg.IOP.CodecPackage.TypeMismatch;
 
@@ -473,8 +472,7 @@ public abstract class Node {
         else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
     }
 
-    void parseBody(Object bodyR) throws Exception{
-        ArrayList<HashMap<String, Object>> body = (ArrayList<HashMap<String, Object>>)bodyR;
+    void parseBody(ArrayList<HashMap<String, Object>> body) throws Exception{
         for (HashMap<String, Object> elem: body){
 
             //Get statement content
@@ -508,17 +506,17 @@ public abstract class Node {
 
                 //Create new nodes on current scope with expression checking in the node class TODO
             } else if (cont.get("statement").equals("if")){
-                System.out.println("aaa");
+                IfNode ifnode = new IfNode("if", symbolsDeclarations, cont);
             }
 
             //create new subscope for
             else if (cont.get("statement").equals("for")){
-
+                IfNode fornode = new IfNode("for", symbolsDeclarations, cont);
             }
 
             //create new subscope while
             else if (cont.get("statement").equals("while")){
-
+                WhileNode whilenode = new WhileNode("while", symbolsDeclarations, cont);
             }
 
 

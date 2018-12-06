@@ -1,24 +1,40 @@
 package helpers;
 
+import Syntax.WrongSyntaxException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class WhileNode extends Node {
 
-    private HashMap<String, Object> scope;
+    HashMap<String,Object> whileElement;
+    ArrayList<HashMap<String, Object>> body;
 
-    public WhileNode(String name, HashMap<String, Object> scope){
+    public WhileNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String,Object> element) throws Exception {
         super(name);
-        this.scope = scope;
-
+        symbolsDeclarations = scope;
+        whileElement = element;
+        body = (ArrayList<HashMap<String, Object>> ) whileElement.get("body");
+        parseWhileBody();
     }
+
     @Override
     public String getMethod() {
         return null;
     }
 
-    @Override
-    public LinkedHashMap<String, Symbol> getSymbols() throws Exception {
+    public void parseWhileBody() throws Exception {
+        HashMap<String,Object> expression = (HashMap<String, Object>) whileElement.get("expression") ;
+        String expressionType = "boolean"; //calculateExpressionResult(ifElement.get("expression"));
+        if (expressionType.equals("boolean") || (expressionType.equals("integer") && isIntBooleanable(expression)))
+        {
+            parseBody(body);
+
+        } else throw new WrongSyntaxException("If statement expression result is not boolean compatible");
+    }
+
+    public LinkedHashMap<String, Symbol> getSymbols() {
         return null;
     }
 }

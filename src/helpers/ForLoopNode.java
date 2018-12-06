@@ -1,23 +1,36 @@
 package helpers;
 
+import Syntax.WrongSyntaxException;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class ForLoopNode extends Node {
+    HashMap<String,Object> forElement;
+    ArrayList<HashMap<String, Object>> body;
 
-    private HashMap<String, Object> scope;
-
-    public ForLoopNode(String name, HashMap<String, Object> scope){
+    public ForLoopNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String,Object> element) throws Exception {
         super(name);
-        this.scope = scope;
+        symbolsDeclarations = scope;
+        forElement = element;
+        body = (ArrayList<HashMap<String, Object>> ) forElement.get("body");
+        parseForBody();
     }
+
     @Override
     public String getMethod() {
         return null;
     }
 
-    @Override
-    public LinkedHashMap<String, Symbol> getSymbols() throws Exception {
+    public void parseForBody() throws Exception {
+        System.out.println("AAAA");
+        //Evaluate expressions -> both should be int
+        //Add identifier to scope
+        //Parse body
+    }
+
+    public LinkedHashMap<String, Symbol> getSymbols() {
         return null;
     }
 }

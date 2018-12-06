@@ -1,26 +1,21 @@
-var a: integer is 1
-var b: integer is -1
-
-var c: boolean is 0
-var d: boolean is 0
-
 var rec: record
     var j: array [12] boolean
 end
-
-type rece is integer
-var p: rece
-var m: integer is p
-
 
 routine bar (k: real): integer is
     a := 2
     rec.j[5 % 5 * 10] := 1
     rec.j[5 % 5 * 10] := +1
-    if true then
+    var z: integer
+
+    for ne in 1 .. 2 loop
+        bar(1.2)
+    end
+
+    while false and false loop
+        bar(1.2)
         var ep:integer
-    else
-        var pe:integer
+        var me: integer is ep
     end
 end
 

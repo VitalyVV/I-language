@@ -1,8 +1,6 @@
 package helpers;
 
 import Syntax.WrongSyntaxException;
-import com.sun.corba.se.impl.io.TypeMismatchException;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.SyntaxException;
 
 import java.util.*;
 
@@ -31,9 +29,24 @@ public class RoutineNode extends Node {
         return parameters;
     }
 
-    public RoutineNode(String name, HashMap<String, Object> routine){
+    public RoutineNode(String name, HashMap<String, Object> routine) throws Exception {
         super(name);
         this.routine = routine;
+        if (routine.containsKey("parameters")){
+            ArrayList<HashMap<String, Object>> params = (ArrayList<HashMap<String, Object>>) routine.get("parameters");
+            numParams = params.size();
+            //add parameters to param list and symbols
+            for (HashMap<String, Object> elem:params){
+                String parName = (String) elem.get("name");
+
+                String type = getType(elem.get("type"));
+                Symbol s = new Symbol(type, parName, elem);
+                if (symbolsDeclarations.containsKey(parName)) throw new WrongSyntaxException("Vague syntax. Variable " + parName + " already exists");
+                symbolsDeclarations.put(parName, s);
+                parameters.add(s);
+            }
+
+        }
     }
 
     //we need symbols from parent scope as they are visible to the child if declared
@@ -55,7 +68,7 @@ public class RoutineNode extends Node {
             String paramType = calculateExpressionResult(params.get(i));
             if (!parameters.get(i).getType().equals(paramType))
                 throw new WrongSyntaxException("Invalid argument type of parameter "
-                        +parameters.get(i).getName()+ " .Expected: "+parameters.get(i).getType()+" .Got: "+ paramType);
+                        + parameters.get(i).getName()+ " .Expected: "+parameters.get(i).getType()+" .Got: "+ paramType);
         }
     }
 
@@ -90,24 +103,21 @@ public class RoutineNode extends Node {
 
     //go through routine declaration and build inner structure
     public void createTable() throws Exception{
-        if (routine.containsKey("parameters")){
-            ArrayList<HashMap<String, Object>> params = (ArrayList<HashMap<String, Object>>) routine.get("parameters");
-            numParams = params.size();
-            //add parameters to param list and symbols
-            for (HashMap<String, Object> elem:params){
-                String parName = (String) elem.get("name");
+        //Allow recursive calls but don't create tables for routine inside herself or something bad is going to happen
+        RoutineNode rout = new RoutineNode((String) routine.get("name"), routine);
+        //Routines can't read declarations ahead of them
+        rout.setSymbols(symbolsDeclarations);
+        rout.setTypes(typeMappings);
+        //we add it separate list of routines
+        routines.add(rout);
+        //we add name of routine to find previously declared ones + to check if we actually have declared it
+        namesRoutines.add((String) routine.get("name"));
+        symbolsDeclarations.put((String) routine.get("name"),
+                new Symbol("routine", (String) routine.get("name"), rout));
 
-                String type = getType(elem.get("type"));
-                Symbol s = new Symbol(type, parName, elem);
-                if (symbolsDeclarations.containsKey(parName)) throw new WrongSyntaxException("Vague syntax. Variable " + parName + " already exists");
-                symbolsDeclarations.put(parName, s);
-                parameters.add(s);
-            }
-
-        }
             //parse body statements if exist
         if (routine.containsKey("body")){
-            parseBody(routine.get("body"));
+            parseBody((ArrayList<HashMap<String, Object>>) routine.get("body"));
         } else if (routine.get("hastype").equals("true") && !routine.containsKey("body"))  //If there is a return type and no body
             throw new WrongSyntaxException("Routine " + routine.get("name") + " has to return "+ routine.get("type"));
     }

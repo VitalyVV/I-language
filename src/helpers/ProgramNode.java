@@ -20,7 +20,6 @@ public class ProgramNode extends Node {
     public ProgramNode(String name, ArrayList<HashMap<String, Object>> children){
         super(name);
         this.children = children;
-
     }
 
     public LinkedHashMap<String, Symbol> getSymbols(){
