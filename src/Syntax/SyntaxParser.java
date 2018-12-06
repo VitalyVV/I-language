@@ -296,6 +296,7 @@ public class SyntaxParser {
 
     private HashMap<String, Object> parseWhileLoop() throws WrongSyntaxException {
         HashMap<String, Object> temp = new HashMap<>();
+        --index;
         String word = nextWord();
         temp.put("statement", "while");
         temp.put("expression", parseExpression());
