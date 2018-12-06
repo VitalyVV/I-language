@@ -1,5 +1,6 @@
 import Lexer.Lexer;
 import Syntax.SyntaxParser;
+import Syntax.TreeTranslator;
 import java.io.*;
 import java.util.Scanner;
 
@@ -16,6 +17,8 @@ public class Main {
         lx.parseString(s.toString());
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
 
+        TreeTranslator translator = new TreeTranslator(sp.getTree());
+        translator.translate();
         SemanticAnalyzer ss = new SemanticAnalyzer();
 
         try {
