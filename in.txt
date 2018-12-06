@@ -19,16 +19,19 @@ routine bar (k: real): integer is
         end
     end
 
+    for ez in 1 .. 2 loop
+        bar(11.2)
+    end
+
+    bar(12.1)
+    var e: integer is bar(10.1)
+end
 
     type a is record
         var a: integer
     end
 
-    type b is integer
-
     var p: a
 
-    bar(12.1)
-    var e: integer is bar(10.1)
-end
+    var n: integer is p.a
 

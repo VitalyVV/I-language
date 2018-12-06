@@ -23,6 +23,7 @@ public abstract class Node {
 
     //type declarations
     protected HashMap<String,Object> typeMappings = new LinkedHashMap<>();
+    protected HashMap<String,Object> memberMappings = new HashMap<>();
 
     protected HashMap<String, HashMap<String, Object>> routineEndTypes = new HashMap<>();
 
@@ -83,8 +84,8 @@ public abstract class Node {
     //gets the result of operation between two types: if it happens that the types are incompatible, throws exception
     protected String getTypesResult(String a, String b, String op) throws Exception{
         if (a.equals("integer") && b.equals("integer") && op.equals("div") ) return "real";
+        else if (a.equals("integer") && b.equals("integer") && getOpType(op).equals("simple")) return "boolean";
         else if (a.equals("integer") && b.equals("integer")) return "integer";
-        else if (a.equals("boolean") && b.equals("integer")) return "boolean";
         else if ((a.equals("integer") && b.equals("boolean")) || (a.equals("boolean") && b.equals("integer"))) return "integer";
         else if (a.equals("real") && b.equals("real")) return "real";
         else if (a.equals("boolean") && b.equals("boolean")) return "boolean";
@@ -154,7 +155,7 @@ public abstract class Node {
 
     protected boolean isIntBooleanable(HashMap<String,Object> value)
     {
-        HashMap<String,Object> val = (HashMap<String, Object>) value.get("value");
+        HashMap<String,Object> val = value;
         while(true)
         {
             if (val.containsKey("type") && val.get("type").equals("integer")) break;
@@ -390,7 +391,17 @@ public abstract class Node {
             HashMap<String,Object> record = (HashMap<String,Object>) type.get("record");
             ArrayList<HashMap<String,Object>> members = (ArrayList<HashMap<String,Object>>) record.get("content");
             return members;
-        } else throw new SyntaxException("Not a record: "+ unit.get("name"));
+        } else if (type.containsKey("identifier"))
+        {
+            if(memberMappings.containsKey(type.get("identifier")))
+            {
+                HashMap<String,Object> record = (HashMap<String,Object>) memberMappings.get(type.get("identifier"));
+                record = (HashMap<String, Object>) record.get("record");
+                ArrayList<HashMap<String,Object>> members = (ArrayList<HashMap<String,Object>>) record.get("content");
+                return members;
+            } else throw new SyntaxException("Not a record: "+ unit.get("name"));
+        }
+        else throw new SyntaxException("Not a record: "+ unit.get("name"));
     }
 
     protected String getModifiableType(HashMap<String, Object> modifvar) throws Exception {
@@ -462,14 +473,13 @@ public abstract class Node {
         String result = calculateExpressionResult(hashmaped.get("left"));
         String mapedResultType  = (String)hashmaped.get("is");
         //Logic for factor relation and simple type is identical since all require same type left and right operands
-        if (mapedResultType.equals("factor") || mapedResultType.equals("relation") || mapedResultType.equals("simple")){
-            if (((String)hashmaped.get("hasright")).equals("true")){
+        if (mapedResultType.equals("factor") || mapedResultType.equals("relation") || mapedResultType.equals("simple") || mapedResultType.equals("expression") || mapedResultType.equals("summand")){
+            if (hashmaped.containsKey("right")){
                 String resultRight = calculateExpressionResult(hashmaped.get("right"));
                 return getTypesResult(result, resultRight, (String)hashmaped.get("op"));
             } else return result;
             //Summand and expression have only left operands
-        } else if (mapedResultType.equals("summand")) return result;
-        else if (mapedResultType.equals("expression")) return result;
+        }
         else throw new TypeMismatchException("Syntax analysis failed. Expression type not valid: "+ (String)hashmaped.get("op"));
     }
 
@@ -496,7 +506,7 @@ public abstract class Node {
                 String toAssign = calculateExpressionResult(cont.get("value")); //Assignment value
                 String assignableType = getModifiableType((HashMap<String, Object>) cont.get("name"));
 
-                if (assignableType.equals("boolean") &&  toAssign.equals("integer") && !isIntBooleanable(cont)) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
+                if (assignableType.equals("boolean") &&  toAssign.equals("integer") && !isIntBooleanable((HashMap<String, Object>) cont.get("value"))) throw new WrongSyntaxException("Can't assign non 1 or 0 int to boolean");
                 if (!assignableType.equals(toAssign) && !(assignableType.equals("boolean") &&  toAssign.equals("integer")))
                 {
                     HashMap<String,Object> assignable = (HashMap<String, Object>) cont.get("name");
@@ -517,7 +527,7 @@ public abstract class Node {
 
             //create new subscope for
             else if (cont.get("statement").equals("for")){
-                IfNode fornode = new IfNode("for", symbolsDeclarations,typeMappings, cont);
+                ForLoopNode fornode = new ForLoopNode("for", symbolsDeclarations,typeMappings, cont);
                 lastKnown = new Symbol("for", "for", null);
             }
 
@@ -566,6 +576,10 @@ public abstract class Node {
                 if (symbolsDeclarations.containsKey(cont.get("name"))) throw new SyntaxException("Variable has already been declared: "+ cont.get("name")+" can't call a new type with such name");
 
                 typeMappings.put((String) cont.get("name"), getType(cont.get("type")));
+                if (getType(cont.get("type")).equals("record"))
+                {
+                    memberMappings.put((String) cont.get("name"), cont.get("type"));
+                }
             } else throw new WrongSyntaxException("Unknown statement type: "+ cont.get("statement"));
         }
 

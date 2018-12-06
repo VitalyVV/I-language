@@ -27,11 +27,10 @@ public class WhileNode extends Node {
 
     public void parseWhileBody() throws Exception {
         HashMap<String,Object> expression = (HashMap<String, Object>) whileElement.get("expression") ;
-        String expressionType = "boolean"; //calculateExpressionResult(ifElement.get("expression"));
+        String expressionType = calculateExpressionResult(whileElement.get("expression"));
         if (expressionType.equals("boolean") || (expressionType.equals("integer") && isIntBooleanable(expression)))
         {
             parseBody(body);
-
         } else throw new WrongSyntaxException("If statement expression result is not boolean compatible");
     }
 
