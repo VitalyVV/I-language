@@ -4,34 +4,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Expression {
-    private Relation main;
-    private ArrayList<String> ops;
-    private ArrayList<Relation> relations;
+    private Relation relLeft;
+    private String op;
+    private Relation relRight;
 
     public Expression(HashMap<String, Object> map) {
-        this.main = new Relation((HashMap<String, Object>)map.get("left"));
-        this.ops = ops;
-        this.relations = relations;
+        this.relLeft = new Relation((HashMap<String, Object>)map.get("left"));
+        if (map.get("hasright").equals("true")){
+            this.relRight = new Relation((HashMap<String, Object>)map.get("right"));
+            this.op = (String)map.get("op");
+        }
     }
 
     public String toJavaCode() {
-        StringBuilder result = new StringBuilder(main.toJavaCode());
-        for (String op : ops
-                ) {
+        StringBuilder result = new StringBuilder(relLeft.toJavaCode());
             switch (op) {
                 case "and": {
-                    result.append(" && ").append(relations.remove(0).toJavaCode());
+                    result.append(" && ").append(relRight.toJavaCode());
                 }
                 case "or": {
-                    result.append(" || ").append(relations.remove(0).toJavaCode());
+                    result.append(" || ").append(relRight.toJavaCode());
                 }
                 case "xor": {
-                    result.append(" ^ ").append(relations.remove(0).toJavaCode());
+                    result.append(" ^ ").append(relRight.toJavaCode());
                 }
                 default:
                     break;
             }
-        }
         return result.toString();
     }
 }
