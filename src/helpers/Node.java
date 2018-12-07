@@ -129,6 +129,8 @@ public abstract class Node {
     //get type for variable using the one declared in specified hashmap (also perform a check for a variable to
     // have been  already declared)
     protected String getType(Object unit) throws Exception{
+        if (unit.equals("integer") || unit.equals("real") || unit.equals("boolean") || unit.equals("None"))
+            return (String) unit;
         HashMap<String, Object> a= (HashMap<String, Object>) unit;
         if (a.containsKey("primitive")){
             return (String)a.get("primitive");
@@ -582,8 +584,7 @@ public abstract class Node {
                     symbolsDeclarations.put((String) cont.get("name"), s);
                     lastKnown = s;
                 }
-            }
-            else if (cont.get("statement").equals("type")){
+            } else if (cont.get("statement").equals("type")){
                 //Add type mapping to the listvar e: integer is bar(10.1)
                 if (typeMappings.keySet().contains(cont.get("name"))) throw new WrongSyntaxException("Type has already been declared: "+ cont.get("name"));
                 if (symbolsDeclarations.containsKey(cont.get("name"))) throw new SyntaxException("Variable has already been declared: "+ cont.get("name")+" can't call a new type with such name");
