@@ -79,7 +79,7 @@ def parseArray(line):
             str = re.sub(":(\\s)*array", " =", line)
             str = re.sub("(\\[)", " ", str)
             str = re.sub("(])", " ", str)
-            str = str+"*[None]"
+            str = str+"*[0]"
         return str
     return None
 

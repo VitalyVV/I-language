@@ -420,8 +420,7 @@ public abstract class Node {
             else if (namesRoutines.contains(modifName)){
                 RoutineSymbol routine = (RoutineSymbol) symbolsDeclarations.get(modifName).getUnit();
                 return routine.getType();
-            }
-            else throw new Exception("No such identifier declared: "+modifName);
+            } else return "integer";
         }
         else {
             //Get member access list
@@ -534,7 +533,7 @@ public abstract class Node {
                 //Check for assignment result according to obtained types, if no match - exception is thrown
 
             } else if (cont.get("statement").equals("if")){
-                IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont,routines,namesRoutines);
+                IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont,routines, namesRoutines);
                 lastKnown = new Symbol("if", "if", null);
 
             }

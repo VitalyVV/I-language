@@ -20,7 +20,7 @@ public class IfNode extends Node {
         setRoutines( routines, namesRoutines);
         symbolsDeclarations = (LinkedHashMap<String, Symbol>) scope.clone();
         typeMappings = (HashMap<String, Object>) types.clone();
-        originalScope = scope;
+        originalScope = (LinkedHashMap<String, Symbol>) scope.clone();
         ifElement = element;
         body = (ArrayList<HashMap<String, Object>> ) ifElement.get("body");
         if (ifElement.containsKey("else_body"))

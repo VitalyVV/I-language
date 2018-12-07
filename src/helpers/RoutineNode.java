@@ -130,10 +130,10 @@ public class RoutineNode extends Node {
                     Symbol s = new Symbol(type, parName, elem);
 
                     if (symbolsDeclarations.keySet().contains(parName)){
-                        symbolsDeclarations.remove(parName);
+                        this.symbolsDeclarations.remove(parName);
 
                     }
-                    symbolsDeclarations.put(parName, s);
+                    this.symbolsDeclarations.put(parName, s);
 //                    innerSymbolsDeclarations.put(parName, s);
                 }}
 
