@@ -5,14 +5,16 @@ import Syntax.WrongSyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class WhileNode extends Node {
 
     HashMap<String,Object> whileElement;
     ArrayList<HashMap<String, Object>> body;
 
-    public WhileNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String,Object> element) throws Exception {
+    public WhileNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String, Object> element, LinkedList<RoutineNode> routines, LinkedList<String> namesRoutines) throws Exception {
         super(name);
+        setRoutines( routines, namesRoutines);
         symbolsDeclarations = (LinkedHashMap<String, Symbol>)scope.clone();
         typeMappings = (HashMap<String, Object>) types.clone();
         whileElement = element;

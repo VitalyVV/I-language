@@ -13,15 +13,16 @@ routine get_power(m:integer):integer is
 		k := k * 2
 	end
 
-	var result is k
+	var result:integer is k
 end
 
-routine choose_next(ns: integer):integer is
+routine choose_next(ns: integer): integer is
+
 	for i in 55..n loop
 		 ns := ns + i-55 + i-24 % get_power(M)
 	end
 
-	var result is ns
+	var result:integer is ns
 end
 
 

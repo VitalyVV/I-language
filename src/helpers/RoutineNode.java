@@ -31,9 +31,10 @@ public class RoutineNode extends Node {
         return parameters;
     }
 
-    public RoutineNode(String name, HashMap<String, Object> routine) throws Exception {
+    public RoutineNode(String name, HashMap<String, Object> routine, LinkedList<RoutineNode> routines, LinkedList<String> namesRoutines) throws Exception {
         super(name);
         this.routine = routine;
+        setRoutines(routines,namesRoutines);
         if (routine.containsKey("parameters")){
             ArrayList<HashMap<String, Object>> params = (ArrayList<HashMap<String, Object>>) routine.get("parameters");
             numParams = params.size();
@@ -106,7 +107,7 @@ public class RoutineNode extends Node {
     //go through routine declaration and build inner structure
     public void createTable() throws Exception{
         //Allow recursive calls but don't create tables for routine inside herself or something bad is going to happen
-        RoutineNode rout = new RoutineNode((String) routine.get("name"), routine);
+        RoutineNode rout = new RoutineNode((String) routine.get("name"), routine, routines, namesRoutines);
         //Routines can't read declarations ahead of them
         rout.setSymbols(symbolsDeclarations);
         rout.setTypes(typeMappings);

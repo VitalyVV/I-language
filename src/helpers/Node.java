@@ -68,6 +68,11 @@ public abstract class Node {
         return entry;
     }
 
+    public void setRoutines(LinkedList<RoutineNode> routines, LinkedList<String> namesRoutines){
+        this.routines = routines;
+        this.namesRoutines = namesRoutines;
+    }
+
     public abstract String getMethod();
 
     public abstract LinkedHashMap<String, Symbol> getSymbols() throws Exception;
@@ -526,22 +531,21 @@ public abstract class Node {
                 lastKnown = symbolsDeclarations.get(assignableName);
                 //Check for assignment result according to obtained types, if no match - exception is thrown
 
-                //Create new nodes on current scope with expression checking in the node class TODO
             } else if (cont.get("statement").equals("if")){
-                IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont);
+                IfNode ifnode = new IfNode("if", symbolsDeclarations, typeMappings, cont,routines,namesRoutines);
                 lastKnown = new Symbol("if", "if", null);
 
             }
 
             //create new subscope for
             else if (cont.get("statement").equals("for")){
-                ForLoopNode fornode = new ForLoopNode("for", symbolsDeclarations,typeMappings, cont);
+                ForLoopNode fornode = new ForLoopNode("for", symbolsDeclarations,typeMappings, cont,routines,namesRoutines);
                 lastKnown = new Symbol("for", "for", null);
             }
 
             //create new subscope while
             else if (cont.get("statement").equals("while")){
-                WhileNode whilenode = new WhileNode("while", symbolsDeclarations,typeMappings, cont);
+                WhileNode whilenode = new WhileNode("while", symbolsDeclarations,typeMappings, cont,routines,namesRoutines);
                 lastKnown = new Symbol("while", "while", null);
             }
 
@@ -576,6 +580,7 @@ public abstract class Node {
                     String valueType = calculateExpressionResult(cont.get("expression"));
                     Symbol s = new Symbol(valueType, (String) cont.get("name"), cont);
                     symbolsDeclarations.put((String) cont.get("name"), s);
+                    lastKnown = s;
                 }
             }
             else if (cont.get("statement").equals("type")){

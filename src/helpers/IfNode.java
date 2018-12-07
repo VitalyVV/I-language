@@ -5,6 +5,7 @@ import Syntax.WrongSyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class IfNode extends Node {
 
@@ -14,8 +15,9 @@ public class IfNode extends Node {
     ArrayList<HashMap<String, Object>>  else_body;
     boolean hasElse = false;
 
-    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String,Object> element) throws Exception {
+    public IfNode(String name, LinkedHashMap<String, Symbol> scope, HashMap<String, Object> types, HashMap<String, Object> element, LinkedList<RoutineNode> routines, LinkedList<String> namesRoutines) throws Exception {
         super(name);
+        setRoutines( routines, namesRoutines);
         symbolsDeclarations = (LinkedHashMap<String, Symbol>) scope.clone();
         typeMappings = (HashMap<String, Object>) types.clone();
         originalScope = scope;
