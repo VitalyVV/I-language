@@ -26,6 +26,7 @@ def parseRegexp(text):
             break
     reg = reg [mark:]
     reg = re.sub(regex, "", reg)
+    reg =  re.sub("(?<!:)=", " == ", reg)
     reg = re.sub(":=", "=", reg)
     reg = re.sub("while ", "while (", reg)
     reg = re.sub("true", "True", reg)
@@ -73,13 +74,13 @@ def parseArray(line):
 
     if "array" in line and not "routine" in line:
         if (" = " in line):
-            str = re.sub(":(\\s)*array", "", line)
-            str = re.sub("\\[.*]", "", str)
+            str = re.sub(":(\\s)*array(\\s)*\\[.*?]", "", line)
+            #str = re.sub("\\[.*?]", "", str)
         else:
             str = re.sub(":(\\s)*array", " =", line)
             str = re.sub("(\\[)", " ", str)
             str = re.sub("(])", " ", str)
-            str = str+"*[0]"
+            str = str+"*[None]"
         return str
     return None
 
@@ -128,9 +129,12 @@ def parseRoutine(line):
             return None
         str = line
         if ("array" in str):
-            str = re.sub(":array", "", line)
+            str = re.sub(": array", "", str)
+            str = re.sub(":array", "", str)
             str = re.sub("\\[.*]", "", str)
         str = re.sub("=", ":", str)
+        if "(" in str and ")" not in str:
+            str = re.sub("( )+:", "):", str)
         if not "(" in str:
             str = re.sub(":", "() :", str)
         return str
@@ -304,6 +308,10 @@ parsing()
 
 for elem in procLines:
     print(elem)
+
+with open("out.py", "a") as file:
+    for elem in procLines:
+        file.write(elem+"\n")
 
 
 #
