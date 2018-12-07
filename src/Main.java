@@ -16,6 +16,7 @@ public class Main {
             s.append(sc.nextLine());
             s.append("\n");
         }
+
         lx.parseString(s.toString());
         SyntaxParser sp = new SyntaxParser(lx.getTokens());
         ArrayList<HashMap<String, Object>> oo = sp.getRoot();
@@ -31,7 +32,7 @@ public class Main {
             e.printStackTrace();
        }
 
-        String [] cmd ={"python", "src/generator/translator.py"};
+        String [] cmd ={"python", "translator.py"};
         ProcessBuilder pb = new ProcessBuilder (cmd);
         try{
             pb.redirectErrorStream(true);
@@ -48,7 +49,7 @@ public class Main {
             e.printStackTrace();}
 
 
-        String [] cmd1 ={"python", "src/generator/out.py"};
+        String [] cmd1 ={"python", "out.py"};
         ProcessBuilder pb1 = new ProcessBuilder (cmd1);
         try{
             pb1.redirectErrorStream(true);

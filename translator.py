@@ -305,9 +305,7 @@ parsing()
 for elem in procLines:
     print(elem)
 
-with open("out.py", "a") as file:
-    for elem in procLines:
-        file.write(elem+"\n")
+
 #
 # while (True):
 #     strp = parseLine(a)
