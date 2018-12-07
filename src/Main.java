@@ -31,8 +31,22 @@ public class Main {
             e.printStackTrace();
        }
 
-        CodeGenerator cg = new CodeGenerator();
-        String code = cg.generateCode(sp.getRoot());
+        String [] cmd ={"python", "translator.py"};
+        ProcessBuilder pb = new ProcessBuilder (cmd);
+        try{
+            Process p = pb.start();
+            p.waitFor();}
+        catch (InterruptedException e){
+            e.printStackTrace();}
+
+
+        String [] cmd1 ={"python", "out.py"};
+        ProcessBuilder pb1 = new ProcessBuilder (cmd1);
+        try{
+            Process p = pb1.start();
+            p.waitFor();}
+        catch (InterruptedException e){
+            e.printStackTrace();}
 
     }
 }
