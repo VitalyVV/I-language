@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         Lexer lx = new Lexer();
-        Scanner sc = new Scanner(new File("in.txt"));
+        Scanner sc = new Scanner(new File("code.i"));
         StringBuilder s = new StringBuilder();
 
         while(sc.hasNextLine()){
