@@ -36,17 +36,33 @@ public class IfNode extends Node {
         return null;
     }
 
+    protected boolean isTrue(HashMap<String,Object> value)
+    {
+        HashMap<String,Object> val = value;
+        while(true)
+        {
+            if (val.containsKey("type") && (val.get("type").equals("integer") || val.get("type").equals("boolean"))) break;
+            if (val.containsKey("hasright") && val.get("hasright").equals("true")) return false;
+            if (val.containsKey("type") && val.get("type").equals("modifiable")) return false;
+            val = (HashMap<String, Object>) val.get("left");
+        }
+        if (val.get("value").equals("true") || val.get("value").equals("1"))  return true; else return false;
+    }
+
     public void parseBodies() throws Exception {
         HashMap<String,Object> expression = (HashMap<String, Object>) ifElement.get("expression") ;
         String expressionType = calculateExpressionResult(ifElement.get("expression"));
-        if (expressionType.equals("boolean") || (expressionType.equals("integer") && isIntBooleanable(expression)))
-        {
-            parseBody(body);
-            if (hasElse)
+        if (expressionType.equals("boolean") || (expressionType.equals("integer") && isIntBooleanable(expression))) {
+            boolean statementTrue = isTrue((HashMap<String, Object>) ifElement.get("expression"));
+            if (statementTrue)
             {
-                symbolsDeclarations = originalScope;
-                parseBody(else_body);
+                parseBody(body);
             }
+            else if (hasElse) {
+                    symbolsDeclarations = originalScope;
+                    parseBody(else_body);
+                }
+
         } else throw new WrongSyntaxException("If statement expression result is not boolean compatible");
     }
 

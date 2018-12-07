@@ -420,7 +420,7 @@ public abstract class Node {
             else if (namesRoutines.contains(modifName)){
                 RoutineSymbol routine = (RoutineSymbol) symbolsDeclarations.get(modifName).getUnit();
                 return routine.getType();
-            } else return "integer";
+            } else throw new SyntaxException("Undeclared record: " + modifName);
         }
         else {
             //Get member access list
