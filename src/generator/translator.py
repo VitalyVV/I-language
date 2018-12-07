@@ -180,7 +180,7 @@ a = parseRegexp("")
 
 lines = []
 curLine = 0
-with (open("code.i")) as code:
+with (open("src/generator/code.i")) as code:
     lines = code.readlines()
 
 procLines = list()

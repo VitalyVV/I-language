@@ -31,19 +31,36 @@ public class Main {
             e.printStackTrace();
        }
 
-        String [] cmd ={"python", "translator.py"};
+        String [] cmd ={"python", "src/generator/translator.py"};
         ProcessBuilder pb = new ProcessBuilder (cmd);
         try{
+            pb.redirectErrorStream(true);
             Process p = pb.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line;
+
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
             p.waitFor();}
         catch (InterruptedException e){
             e.printStackTrace();}
 
 
-        String [] cmd1 ={"python", "out.py"};
+        String [] cmd1 ={"python", "src/generator/out.py"};
         ProcessBuilder pb1 = new ProcessBuilder (cmd1);
         try{
+            pb1.redirectErrorStream(true);
             Process p = pb1.start();
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line;
+
+            System.out.println("\n\nErrors:");
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
             p.waitFor();}
         catch (InterruptedException e){
             e.printStackTrace();}
